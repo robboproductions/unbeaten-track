@@ -1,0 +1,155 @@
+<?php
+
+/**
+ * @return array<string, list<string>>
+ */
+return [
+    'Australian Capital Territory' => [
+        'Canberra & district',
+        'Northern ACT',
+        'Southern ACT',
+    ],
+
+    'New South Wales' => [
+        'Sydney',
+        'Sydney — Eastern suburbs',
+        'Sydney — Inner West',
+        'Sydney — North Shore',
+        'Sydney — Northern beaches',
+        'Sydney — Parramatta & Western Sydney',
+        'Sydney — South & Sutherland',
+        'Blue Mountains',
+        'Central Coast',
+        'Hunter Valley',
+        'Hunter',
+        'Newcastle & Lake Macquarie',
+        'Port Stephens & Lower North Coast',
+        'Mid North Coast',
+        'North Coast',
+        'Northern Rivers',
+        'New England',
+        'North West Slopes & Plains',
+        'Central West',
+        'Orana & Far West',
+        'Riverina',
+        'Murray',
+        'Snowy Mountains',
+        'South Coast',
+        'Illawarra',
+        'Southern Highlands & Tablelands',
+        'Capital Country',
+        'South Western Sydney & Macarthur',
+        'Lord Howe Island',
+    ],
+
+    'Northern Territory' => [
+        'Darwin & surrounds',
+        'Katherine & Big Rivers',
+        'Barkly & Tennant Creek',
+        'Alice Springs & Red Centre',
+        'Arnhem Land',
+        'Tiwi Islands',
+        'East Arnhem',
+    ],
+
+    'Queensland' => [
+        'Brisbane',
+        'Gold Coast',
+        'Sunshine Coast',
+        'Wide Bay–Burnett',
+        'Darling Downs',
+        'South West Queensland',
+        'Central Queensland',
+        'Capricorn Coast',
+        'Mackay & Whitsundays',
+        'North Queensland',
+        'Far North Queensland & Cape York',
+        'Torres Strait',
+        'Outback Queensland',
+    ],
+
+    'South Australia' => [
+        'Adelaide & suburbs',
+        'Adelaide Hills',
+        'Fleurieu Peninsula',
+        'Kangaroo Island',
+        'Limestone Coast',
+        'Murraylands',
+        'Riverland',
+        'Barossa Valley',
+        'Clare Valley',
+        'Yorke Peninsula',
+        'Eyre Peninsula',
+        'Flinders Ranges & Outback',
+        'Far North',
+    ],
+
+    'Tasmania' => [
+        'Hobart & South',
+        'East Coast',
+        'Launceston & Tamar Valley',
+        'North West & Cradle Coast',
+        'West Coast',
+        'Central Highlands',
+    ],
+
+    'Victoria' => [
+        'Melbourne',
+        'Melbourne — Bayside & Peninsula',
+        'Melbourne — Eastern suburbs',
+        'Melbourne — Northern suburbs',
+        'Melbourne — Western suburbs',
+        'Geelong & Bellarine',
+        'Surf Coast & Otways',
+        'Great Ocean Road',
+        'Ballarat & Central Highlands',
+        'Bendigo & Goldfields',
+        'Macedon Ranges & Spa Country',
+        'Daylesford & Hepburn',
+        'High Country',
+        'North East Victoria',
+        'Goldfields & Spa Country',
+        'Gippsland',
+        'Goulburn Valley',
+        'Murray River (Victoria)',
+        'Sunraysia & Mallee',
+        'Wimmera',
+        'Grampians & Pyrenees',
+        'Western District',
+        'Gippsland — Lakes & coast',
+        'Gippsland — Mountains & forests',
+        'Phillip Island & Bass Coast',
+        'Mornington Peninsula',
+        'Yarra Valley & Dandenongs',
+        'Latrobe Valley',
+    ],
+
+    'Western Australia' => [
+        'Perth & surrounds',
+        'Peel',
+        'South West',
+        'Great Southern',
+        'Wheatbelt',
+        'Goldfields–Esperance',
+        'Mid West',
+        'Gascoyne',
+        'Pilbara',
+        'Kimberley',
+    ],
+
+    'Christmas Island' => [
+        'Christmas Island',
+    ],
+
+    'Cocos (Keeling) Islands' => [
+        'Cocos (Keeling) Islands',
+    ],
+
+    'Norfolk Island' => [
+        'Norfolk Island',
+    ],
+
+    'Jervis Bay Territory' => [
+        'Jervis Bay Territory',
+    ],
+];

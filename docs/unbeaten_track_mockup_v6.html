@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Unbeaten Track — Mockup v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6; background: #2a2e28; color: #4a5248; overflow: hidden; }
+
+/* PREVIEW NAV */
+.preview-nav { background: #2a2e28; height: 44px; display: flex; align-items: center; padding: 0 20px; gap: 10px; flex-shrink: 0; }
+.preview-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-right: 2px; }
+.preview-btn { font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 6px; cursor: pointer; color: rgba(255,255,255,0.6); border: 1px solid transparent; }
+.preview-btn.active { background: #fff; color: #1e3d28; }
+.preview-btn:hover:not(.active) { color: #fff; border-color: rgba(255,255,255,0.25); }
+.preview-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+.photo-toggle { display: flex; align-items: center; gap: 8px; }
+.photo-toggle-label { font-size: 11px; color: rgba(255,255,255,0.45); }
+.toggle-switch { width: 36px; height: 20px; background: rgba(255,255,255,0.15); border-radius: 10px; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.toggle-switch.on { background: #4a7c59; }
+.toggle-knob { width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.2s; }
+.toggle-switch.on .toggle-knob { left: 18px; }
+.toggle-status { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.5); min-width: 30px; }
+.toggle-switch.on + .toggle-status { color: #7dc89a; }
+.preview-spacer { flex: 1; }
+
+/* SCREEN WRAPPER */
+.screens { height: calc(100vh - 44px); position: relative; overflow: hidden; }
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; background: #f4f5f2; }
+.screen.hidden { display: none !important; }
+
+/* SHARED APP NAV */
+.nav { background: #f4f5f2; border-bottom: 1px solid #dde0da; padding: 0 28px; height: 56px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.nav-logo { font-weight: 600; font-size: 16px; letter-spacing: -0.3px; color: #1e3d28; display: flex; align-items: center; gap: 9px; }
+.nav-logo-dot { width: 10px; height: 10px; border-radius: 50%; background: #4a7c59; display: inline-block; flex-shrink: 0; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link { font-size: 14px; padding: 7px 13px; border-radius: 6px; color: #4a5248; cursor: pointer; }
+.nav-link.active { color: #1e3d28; background: #fff; border: 1px solid #dde0da; font-weight: 500; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-cta { display: inline-flex; align-items: center; gap: 6px; background: #4a7c59; color: #fff; border-radius: 7px; padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: #ddeee4; color: #1e3d28; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+
+/* JOURNEY BAR (shared by route builder + table view) */
+.journey-bar { background: #1e3d28; padding: 10px 28px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.journey-bar-title { font-size: 15px; font-weight: 600; color: #fff; }
+.journey-bar-meta { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+.journey-bar-stats { display: flex; gap: 28px; }
+.jstat { text-align: center; }
+.jstat-val { font-size: 18px; font-weight: 600; color: #fff; line-height: 1; }
+.jstat-lbl { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+.jbar-actions { display: flex; align-items: center; gap: 8px; }
+.jbar-btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 7px; padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.jbar-btn-primary { background: #4a7c59; color: #fff; }
+.jbar-btn-ghost { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); }
+
+/* VIEW TOGGLE (map / table) */
+.view-toggle { display: flex; background: rgba(255,255,255,0.1); border-radius: 7px; overflow: hidden; margin: 0 8px; }
+.view-toggle-btn { font-size: 12px; font-weight: 600; padding: 6px 14px; cursor: pointer; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 5px; }
+.view-toggle-btn.active { background: #fff; color: #1e3d28; }
+
+/* PHOTO SYSTEM — unified 3:2 */
+.ratio-box { position: relative; width: 100%; padding-top: 66.67%; overflow: hidden; flex-shrink: 0; }
+.ratio-box.sr-size { width: 60px; padding-top: 40px; }
+.photo-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 500; background-size: cover; background-position: center; }
+
+/* ========================
+   PLANNING HOME — NEW LAYOUT
+   ======================== */
+
+/* Nav dropdown for My Journeys */
+.nav-dropdown-wrap { position: relative; }
+.nav-dropdown-wrap:hover .nav-dropdown { display: block; }
+.nav-link-dropdown { display: flex; align-items: center; gap: 4px; }
+.nav-link-dropdown::after { content: '▾'; font-size: 10px; opacity: 0.6; }
+.nav-dropdown { display: none; position: absolute; top: 100%; left: 0; min-width: 280px; background: #fff; border: 1px solid #dde0da; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 200; overflow: hidden; margin-top: 4px; }
+.nav-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f4f5f2; }
+.nav-dropdown-item:last-child { border-bottom: none; }
+.nav-dropdown-item:hover { background: #f9faf8; }
+.nav-dropdown-item.active { background: #f2f9f5; }
+.nav-dd-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.nav-dd-name { font-size: 13px; font-weight: 600; color: #2a2e28; flex: 1; }
+.nav-dd-meta { font-size: 11px; color: #7a8578; }
+.nav-dd-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; white-space: nowrap; }
+.nav-dropdown-new { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; color: #4a7c59; font-size: 13px; font-weight: 600; border-top: 1px solid #dde0da; background: #f9faf8; }
+.nav-dropdown-new:hover { background: #f2f9f5; }
+
+/* Full-width content + right rail */
+.home-fullwidth { display: grid; grid-template-columns: 1fr 300px; flex: 1; overflow: hidden; }
+.home-main { display: flex; flex-direction: column; overflow-y: auto; }
+
+/* Right rail */
+.home-rail { background: #f4f5f2; border-left: 1px solid #dde0da; display: flex; flex-direction: column; overflow: hidden; }
+.rail-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid #dde0da; flex-shrink: 0; background: #fff; }
+.rail-title { font-size: 13px; font-weight: 600; color: #2a2e28; }
+.rail-action { font-size: 12px; color: #4a7c59; font-weight: 500; cursor: pointer; }
+.rail-cards { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Rail card */
+.rcard { background: #fff; border: 1px solid #dde0da; border-radius: 8px; overflow: hidden; cursor: pointer; flex-shrink: 0; }
+.rcard:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.rcard-photo { width: 100%; height: 150px; display: block; background-size: cover; background-position: center; }
+.rcard-body { padding: 10px 12px 12px; }
+.rcard-tag-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.rcard-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.rcard-name { font-size: 13px; font-weight: 600; color: #2a2e28; margin-bottom: 3px; }
+.rcard-desc { font-size: 12px; color: #4a5248; line-height: 1.5; }
+.rcard-dist { font-size: 11px; color: #7a8578; margin-top: 5px; }
+.rcard-actions { display: flex; gap: 6px; margin-top: 8px; }
+.rcard-btn-p { display: inline-flex; align-items: center; background: #ddeee4; color: #1e3d28; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 600; cursor: pointer; }
+.rcard-btn-s { display: inline-flex; align-items: center; background: #f4f5f2; color: #4a5248; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid #dde0da; }
+.hero { position: relative; flex-shrink: 0; height: 250px; overflow: hidden; }
+.hero-ph { position: absolute; inset: 0; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.28) 50%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 26px 30px; }
+.hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 5px; }
+.hero-heading { font-size: 28px; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 5px; }
+.hero-meta { font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 18px; }
+.hero-btns { display: flex; gap: 8px; }
+.hbtn-p { display: inline-flex; align-items: center; gap: 6px; background: #4a7c59; color: #fff; border-radius: 7px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.hbtn-g { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 7px; padding: 7px 16px; font-size: 13px; font-weight: 500; cursor: pointer; }
+
+.main-body { padding: 22px 30px; flex: 1; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat { background: #fff; border: 1px solid #dde0da; border-radius: 8px; padding: 14px 16px; }
+.stat-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #7a8578; margin-bottom: 5px; }
+.stat-val { font-size: 26px; font-weight: 600; color: #2a2e28; line-height: 1; }
+.stat-unit { font-size: 13px; font-weight: 400; color: #7a8578; }
+.narration { background: #f2f9f5; border-left: 3px solid #2d6a4f; border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 22px; }
+.narration-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #2d6a4f; margin-bottom: 5px; }
+.narration-text { font-size: 14px; line-height: 1.65; color: #4a5248; font-style: italic; }
+.sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sec-title { font-size: 15px; font-weight: 600; color: #2a2e28; }
+.sec-action { font-size: 13px; color: #4a7c59; font-weight: 500; cursor: pointer; }
+
+.stops { display: flex; flex-direction: column; gap: 8px; margin-bottom: 22px; }
+.stop { display: flex; align-items: stretch; background: #fff; border: 1px solid #dde0da; border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; }
+.stop:hover .stop-hover-card { opacity: 1; pointer-events: all; }
+.stop-thumb { width: 96px; flex-shrink: 0; }
+.stop-thumb .ratio-box { width: 96px; padding-top: 0; height: 100%; min-height: 90px; }
+.stop-main { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; flex: 1; }
+.stop-num { width: 26px; height: 26px; border-radius: 50%; background: #ddeee4; color: #1e3d28; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+.stop-body { flex: 1; }
+.stop-name { font-size: 15px; font-weight: 600; color: #2a2e28; }
+.stop-detail { font-size: 13px; color: #4a5248; margin-top: 2px; }
+.stop-tags { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+.stag { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 3px; }
+.stop-icons { color: #7a8578; font-size: 14px; display: flex; gap: 14px; flex-shrink: 0; margin-top: 3px; }
+
+.discover { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.dcard { background: #fff; border: 1px solid #dde0da; border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; }
+.dcard:hover .stop-hover-card { opacity: 1; pointer-events: all; }
+.dcard-photo { width: 100%; overflow: hidden; }
+.dcard-photo .ratio-box { max-height: 160px; padding-top: min(66.67%, 160px); }
+.dcard-body { padding: 12px 14px; }
+.dtag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; margin-bottom: 7px; }
+.dname { font-size: 14px; font-weight: 600; color: #2a2e28; margin-bottom: 4px; }
+.ddesc { font-size: 13px; color: #4a5248; line-height: 1.5; }
+.ddist { font-size: 12px; color: #4a5248; margin-top: 7px; }
+
+/* HOVER CARD */
+.stop-hover-card { position: absolute; bottom: calc(100% + 10px); left: 0; width: 300px; background: #fff; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); border: 1px solid #dde0da; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 100; }
+.dcard .stop-hover-card { bottom: auto; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); }
+.hover-photo { width: 100%; }
+.hover-body { padding: 12px 14px; }
+.hover-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; margin-bottom: 6px; }
+.hover-name { font-size: 15px; font-weight: 600; color: #2a2e28; margin-bottom: 4px; }
+.hover-desc { font-size: 13px; color: #4a5248; line-height: 1.5; margin-bottom: 8px; }
+.hover-dist { font-size: 12px; color: #7a8578; margin-bottom: 10px; }
+.hover-actions { display: flex; gap: 6px; }
+.hover-btn-p { display: inline-flex; align-items: center; background: #ddeee4; color: #1e3d28; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.hover-btn-s { display: inline-flex; align-items: center; background: #f4f5f2; color: #4a5248; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #dde0da; }
+
+/* SEARCH RESULT ROW (shared) */
+.sr { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f4f5f2; }
+.sr:last-child { border-bottom: none; }
+.sr:hover { background: #f9faf8; }
+.sr-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sr-thumb { flex-shrink: 0; border-radius: 5px; overflow: hidden; width: 60px; }
+.sr-body { flex: 1; min-width: 0; }
+.sr-name { font-size: 14px; font-weight: 600; color: #2a2e28; }
+.sr-meta { font-size: 12px; color: #4a5248; }
+.sr-dist { font-size: 11px; color: #7a8578; }
+.sr-add { flex-shrink: 0; display: inline-flex; align-items: center; background: #ddeee4; color: #1e3d28; border-radius: 6px; padding: 5px 11px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.sr-add.added { background: #f2f9f5; color: #4a7c59; }
+.sfchip { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 10px; border: 1px solid #dde0da; color: #4a5248; background: #fff; cursor: pointer; white-space: nowrap; }
+.sfchip.on { border-color: #4a7c59; color: #1e3d28; background: #ddeee4; }
+
+/* ========================
+   SCREEN 2 — ROUTE BUILDER
+   ======================== */
+.rb-columns { display: grid; grid-template-columns: 380px 1fr; flex: 1; overflow: hidden; position: relative; }
+.panel-left { background: #fff; border-right: 1px solid #dde0da; display: flex; flex-direction: column; overflow: visible; }
+.panel-tabs { display: flex; border-bottom: 1px solid #dde0da; flex-shrink: 0; }
+.panel-tab { flex: 1; padding: 11px 16px; font-size: 13px; font-weight: 600; color: #7a8578; cursor: pointer; text-align: center; border-bottom: 2px solid transparent; }
+.panel-tab.active { color: #1e3d28; border-bottom-color: #4a7c59; }
+.day-selector { display: flex; gap: 5px; padding: 10px 14px; border-bottom: 1px solid #dde0da; background: #f9faf8; flex-shrink: 0; }
+.day-btn { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px; border: 1px solid #dde0da; color: #4a5248; background: #fff; cursor: pointer; }
+.day-btn.active { background: #1e3d28; color: #fff; border-color: #1e3d28; }
+.day-add { font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px dashed #b8ddc8; color: #4a7c59; cursor: pointer; margin-left: auto; }
+
+/* SEARCH IN LEFT PANEL */
+.panel-search-wrap { padding: 10px 12px; border-bottom: 1px solid #dde0da; background: #f9faf8; flex-shrink: 0; position: relative; }
+.panel-search-inner { display: flex; align-items: center; background: #fff; border: 1px solid #dde0da; border-radius: 7px; padding: 8px 12px; gap: 8px; }
+.panel-search-input { flex: 1; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 14px; color: #2a2e28; background: transparent; }
+.panel-search-input::placeholder { color: #7a8578; }
+.panel-search-chips { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+
+/* FLYOUT — positioned relative to rb-columns, left of map */
+.search-flyout { position: absolute; top: 88px; left: 380px; width: 360px; background: #fff; border: 1px solid #dde0da; border-left: none; border-radius: 0 10px 10px 0; box-shadow: 6px 4px 20px rgba(0,0,0,0.14); z-index: 50; overflow: hidden; }
+.search-flyout-header { padding: 12px 14px 8px; border-bottom: 1px solid #dde0da; display: flex; align-items: center; justify-content: space-between; background: #f9faf8; }
+.search-flyout-title { font-size: 12px; font-weight: 600; color: #2a2e28; }
+.search-flyout-meta { font-size: 11px; color: #7a8578; }
+
+.panel-left { background: #fff; border-right: 1px solid #dde0da; display: flex; flex-direction: column; overflow: visible; min-height: 0; }
+.itin-list { flex: 1; overflow-y: auto; padding: 10px 12px 20px; min-height: 0; max-height: calc(100vh - 280px); }
+.itin-start { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #f9faf8; border: 1px solid #dde0da; border-radius: 8px; margin-bottom: 2px; }
+.itin-start-dot { width: 14px; height: 14px; border-radius: 50%; background: #1e3d28; flex-shrink: 0; }
+.itin-label { font-size: 14px; font-weight: 600; color: #2a2e28; }
+.itin-sub { font-size: 12px; color: #4a5248; }
+.drive-gap { display: flex; align-items: center; padding: 3px 0 3px 19px; }
+.drive-vert { width: 2px; height: 22px; border-left: 2px dashed #b8ddc8; }
+.drive-pill { font-size: 11px; color: #4a5248; background: #f4f5f2; border: 1px solid #dde0da; border-radius: 4px; padding: 2px 8px; margin-left: 10px; white-space: nowrap; }
+
+.rb-stop-card { background: #fff; border: 1px solid #dde0da; border-radius: 8px; margin-bottom: 2px; overflow: hidden; display: flex; position: relative; cursor: pointer; }
+.rb-stop-card:hover .stop-hover-card { opacity: 1; pointer-events: all; }
+.rb-stop-card.overnight { border-color: #b8ddc8; }
+.rb-thumb { width: 96px; flex-shrink: 0; align-self: stretch; position: relative; overflow: hidden; }
+.rb-thumb .photo-ph { position: absolute; inset: 0; }
+.rb-stop-inner { display: flex; align-items: flex-start; gap: 8px; padding: 10px 10px 10px 8px; flex: 1; }
+.drag-handle { display: flex; flex-direction: column; gap: 3px; align-items: center; padding: 4px 2px; cursor: grab; flex-shrink: 0; margin-top: 2px; }
+.drag-dot-row { display: flex; gap: 3px; }
+.drag-dot { width: 3px; height: 3px; border-radius: 50%; background: #c0c4be; }
+.rb-stop-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+.rb-stop-info { flex: 1; min-width: 0; }
+.rb-stop-name { font-size: 14px; font-weight: 600; color: #2a2e28; }
+.rb-stop-detail { font-size: 12px; color: #4a5248; margin-top: 1px; }
+.rb-stop-tags { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.rb-stop-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: flex-start; margin-top: 2px; }
+.rb-action-btn { width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #7a8578; cursor: pointer; background: #f4f5f2; }
+.overnight-bar { background: #f2f9f5; border-top: 1px solid #dde0da; padding: 6px 12px; display: flex; align-items: center; gap: 6px; }
+.overnight-text { font-size: 12px; color: #1e3d28; font-weight: 500; }
+.overnight-edit { font-size: 11px; color: #4a7c59; margin-left: auto; cursor: pointer; }
+.add-stop-row { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; border: 1.5px dashed #b8ddc8; color: #4a7c59; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 6px; }
+.add-stop-row:hover { background: #f2f9f5; }
+
+/* MAP PANEL */
+.panel-map { position: relative; background: #e8ece6; overflow: hidden; }
+.map-svg { width: 100%; height: 100%; }
+.map-controls { position: absolute; top: 16px; right: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 10; }
+.map-ctrl-btn { width: 38px; height: 38px; background: #fff; border: 1px solid #dde0da; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #4a5248; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.map-type-toggle { position: absolute; bottom: 20px; right: 16px; background: #fff; border: 1px solid #dde0da; border-radius: 8px; display: flex; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 10; }
+.map-type-btn { font-size: 12px; font-weight: 500; padding: 7px 13px; cursor: pointer; color: #4a5248; }
+.map-type-btn.active { background: #1e3d28; color: #fff; }
+.map-legend { position: absolute; bottom: 20px; left: 16px; background: #fff; border: 1px solid #dde0da; border-radius: 8px; padding: 10px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 10; }
+.map-legend-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #7a8578; margin-bottom: 7px; }
+.map-legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #4a5248; margin-bottom: 4px; }
+.map-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.map-legend-line { width: 20px; height: 0; border-top: 2px dashed #4a7c59; flex-shrink: 0; }
+.map-popup { position: absolute; z-index: 15; width: 240px; }
+.map-popup-inner { background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); border: 1px solid #dde0da; overflow: hidden; }
+.map-popup-photo { width: 100%; }
+.map-popup-body { padding: 10px 12px 0; }
+.map-popup-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; margin-bottom: 5px; }
+.map-popup-name { font-size: 13px; font-weight: 600; color: #2a2e28; line-height: 1.2; }
+.map-popup-detail { font-size: 12px; color: #4a5248; margin-top: 3px; }
+.map-popup-dist { font-size: 11px; color: #7a8578; margin-top: 3px; margin-bottom: 8px; }
+.map-popup-actions { display: flex; border-top: 1px solid #dde0da; }
+.map-popup-btn { flex: 1; padding: 8px; font-size: 12px; font-weight: 600; text-align: center; cursor: pointer; }
+.map-popup-btn-primary { background: #ddeee4; color: #1e3d28; }
+.map-popup-btn-secondary { color: #4a5248; border-left: 1px solid #dde0da; }
+.map-popup-arrow { width: 12px; height: 8px; background: #fff; clip-path: polygon(0 0, 100% 0, 50% 100%); margin: 0 auto; }
+
+/* ========================
+   SCREEN 3 — TABLE VIEW
+   ======================== */
+.tv-toolbar { background: #fff; border-bottom: 1px solid #dde0da; padding: 10px 28px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.tv-btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 7px; padding: 7px 14px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid #dde0da; color: #4a5248; background: #fff; white-space: nowrap; }
+.tv-btn-green { background: #ddeee4; color: #1e3d28; border-color: #b8ddc8; font-weight: 600; }
+.tv-btn-primary { background: #4a7c59; color: #fff; border-color: #4a7c59; font-weight: 600; }
+.tv-edit-all-bar { background: #1e3d28; padding: 8px 28px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.tv-edit-all-label { font-size: 13px; font-weight: 600; color: #fff; }
+.tv-edit-all-meta { font-size: 12px; color: rgba(255,255,255,0.6); }
+.tv-edit-all-btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.tv-edit-all-save { background: #4a7c59; color: #fff; margin-left: auto; }
+.tv-edit-all-cancel { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.85); }
+
+.tv-body { flex: 1; overflow-y: auto; padding: 16px 28px 24px; }
+.tv-day-block { margin-bottom: 20px; border: 1px solid #dde0da; border-radius: 10px; overflow: hidden; background: #fff; }
+.tv-day-header { background: #f4f5f2; padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #dde0da; }
+.tv-day-label { font-size: 13px; font-weight: 600; color: #1e3d28; background: #ddeee4; padding: 3px 10px; border-radius: 5px; }
+.tv-day-date { font-size: 13px; font-weight: 500; color: #2a2e28; }
+.tv-day-meta { font-size: 12px; color: #7a8578; }
+.tv-day-date-input { font-size: 13px; font-weight: 500; color: #2a2e28; border: 1px solid #dde0da; border-radius: 5px; padding: 3px 8px; font-family: 'Inter', sans-serif; outline: none; background: #fff; }
+.tv-day-date-input:focus { border-color: #4a7c59; }
+.tv-day-actions { margin-left: auto; display: flex; gap: 6px; }
+.tv-day-btn { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 5px; cursor: pointer; border: 1px solid #dde0da; color: #4a5248; background: #fff; }
+.tv-day-btn.danger { color: #c4552f; border-color: #f5ddd6; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
+thead th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7a8578; border-bottom: 1px solid #dde0da; white-space: nowrap; background: #fafbf9; }
+tbody tr { border-bottom: 1px solid #f4f5f2; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover:not(.editing) { background: #fafbf9; }
+tbody tr.overnight-row { background: #f2f9f5; }
+tbody tr.editing { background: #edf7f1; outline: 2px solid #4a7c59; outline-offset: -2px; position: relative; }
+tbody td { padding: 12px 16px; color: #2a2e28; vertical-align: middle; }
+td.muted { color: #4a5248; font-size: 13px; }
+.tv-thumb-cell { width: 68px; padding: 10px 12px 10px 16px !important; }
+.tv-thumb-img { width: 48px; height: 32px; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+.tv-thumb-img .photo-ph { position: relative; inset: auto; width: 48px; height: 32px; }
+.tv-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; margin-right: 3px; white-space: nowrap; }
+.tv-input { width: 100%; border: 1px solid #dde0da; border-radius: 5px; padding: 5px 8px; font-size: 13px; font-family: 'Inter', sans-serif; color: #2a2e28; background: #fff; outline: none; }
+.tv-input:focus { border-color: #4a7c59; box-shadow: 0 0 0 2px rgba(74,124,89,0.15); }
+.tv-row-actions { display: flex; gap: 4px; white-space: nowrap; align-items: center; }
+.tv-row-btn { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 5px; cursor: pointer; border: 1px solid #dde0da; color: #4a5248; background: #fff; line-height: 1; }
+.tv-row-btn.save { background: #ddeee4; color: #1e3d28; border-color: #b8ddc8; }
+.tv-row-btn.del { color: #c4552f; border-color: #f5ddd6; }
+.tv-row-btn.move { font-size: 10px; padding: 3px 6px; color: #7a8578; }
+.tv-add-row { display: flex; align-items: center; gap: 8px; padding: 9px 12px; color: #4a7c59; font-size: 13px; font-weight: 500; cursor: pointer; border-top: 1px dashed #b8ddc8; }
+.tv-add-row:hover { background: #f2f9f5; }
+.tv-add-day { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px dashed #b8ddc8; border-radius: 10px; color: #4a7c59; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; }
+.tv-add-day:hover { background: #f2f9f5; }
+</style>
+</head>
+<body>
+
+<!-- ========================
+     PREVIEW NAV (all screens)
+     ======================== -->
+<div class="preview-nav">
+  <span class="preview-label">Screen</span>
+  <span class="preview-btn active" onclick="showScreen('home')">Planning home</span>
+  <span class="preview-btn" onclick="showScreen('builder')">Route builder</span>
+  <span class="preview-btn" onclick="showScreen('table')">Table view</span>
+  <div class="preview-divider"></div>
+  <div class="photo-toggle">
+    <span class="photo-toggle-label">Real photos</span>
+    <div class="toggle-switch" id="photoToggle" onclick="togglePhotos()"><div class="toggle-knob"></div></div>
+    <span class="toggle-status" id="toggleStatus">Off</span>
+  </div>
+</div>
+
+<div class="screens">
+
+<!-- ========================
+     SCREEN 1: PLANNING HOME
+     ======================== -->
+<div class="screen" id="screen-home">
+  <nav class="nav">
+    <div class="nav-logo"><span class="nav-logo-dot"></span>Unbeaten Track</div>
+    <div class="nav-links">
+      <span class="nav-link active">Plan</span>
+      <div class="nav-dropdown-wrap">
+        <span class="nav-link nav-link-dropdown">My Journeys</span>
+        <div class="nav-dropdown">
+          <div class="nav-dropdown-item active">
+            <span class="nav-dd-dot" style="background:#4a7c59;"></span>
+            <span class="nav-dd-name">Sydney → Melbourne</span>
+            <span class="nav-dd-meta">3 days · 740 km</span>
+            <span class="nav-dd-badge" style="background:#ddeee4;color:#1e3d28;">In progress</span>
+          </div>
+          <div class="nav-dropdown-item">
+            <span class="nav-dd-dot" style="background:#dde0da;"></span>
+            <span class="nav-dd-name">Blue Mountains loop</span>
+            <span class="nav-dd-meta">2 days · 320 km</span>
+            <span class="nav-dd-badge" style="background:#f5e8c0;color:#4a3000;">Draft</span>
+          </div>
+          <div class="nav-dropdown-item">
+            <span class="nav-dd-dot" style="background:#dde0da;"></span>
+            <span class="nav-dd-name">Snowy Mountains drive</span>
+            <span class="nav-dd-meta">4 days · 680 km</span>
+            <span class="nav-dd-badge" style="background:#d8e8f5;color:#1c3150;">Saved</span>
+          </div>
+          <div class="nav-dropdown-item">
+            <span class="nav-dd-dot" style="background:#dde0da;"></span>
+            <span class="nav-dd-name">Hunter Valley wine run</span>
+            <span class="nav-dd-meta">1 day · 280 km</span>
+            <span class="nav-dd-badge" style="background:#d8e8f5;color:#1c3150;">Saved</span>
+          </div>
+          <div class="nav-dropdown-new">+ New journey</div>
+        </div>
+      </div>
+      <span class="nav-link">Discover</span>
+      <span class="nav-link">Map</span>
+      <span class="nav-link">Library</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-cta">+ New journey</span>
+      <div class="nav-avatar">KR</div>
+    </div>
+  </nav>
+
+
+  <!-- FULL WIDTH LAYOUT: main + right rail -->
+  <div class="home-fullwidth">
+    <main class="home-main">
+      <div class="hero">
+        <div class="hero-ph photo-ph" id="hero-ph" style="background:#3d6b4a;"></div>
+        <div class="hero-overlay">
+          <p class="hero-eyebrow">Current journey · Slow Roads</p>
+          <p class="hero-heading">Sydney to Melbourne the good way</p>
+          <p class="hero-meta">3 days &nbsp;·&nbsp; 740 km &nbsp;·&nbsp; Caravan friendly &nbsp;·&nbsp; Pet friendly</p>
+          <div class="hero-btns">
+            <span class="hbtn-p">▶ Start travel mode</span>
+            <span class="hbtn-g" onclick="showScreen('builder')" style="cursor:pointer;">⊞ Build route</span>
+            <span class="hbtn-g" onclick="showScreen('table')" style="cursor:pointer;">☰ Table view</span>
+            <span class="hbtn-g">↗ Share</span>
+          </div>
+        </div>
+      </div>
+      <div class="main-body">
+        <div class="stats">
+          <div class="stat"><p class="stat-lbl">Distance</p><p class="stat-val">740 <span class="stat-unit">km</span></p></div>
+          <div class="stat"><p class="stat-lbl">Days</p><p class="stat-val">3 <span class="stat-unit">nights</span></p></div>
+          <div class="stat"><p class="stat-lbl">Stops</p><p class="stat-val">12 <span class="stat-unit">POIs</span></p></div>
+          <div class="stat"><p class="stat-lbl">Drive time</p><p class="stat-val">9.5 <span class="stat-unit">hrs</span></p></div>
+        </div>
+        <div class="narration">
+          <p class="narration-lbl">▶ Drive-past narration · Day 2</p>
+          <p class="narration-text">"The mountain to your right is Mount Terrible — named not for its terrain but by a surveyor who had a very bad day there in 1853."</p>
+        </div>
+        <div class="sec-hdr"><p class="sec-title">Stops · Day 1 — Sydney to Binalong</p><span class="sec-action">+ Add stop</span></div>
+        <div class="stops">
+          <div class="stop">
+            <div class="stop-thumb"><div class="ratio-box" style="padding-top:0;height:100%;min-height:90px;"><div class="photo-ph" id="stop-thumb-1" style="background:#4a7c59;"></div></div></div>
+            <div class="stop-main">
+              <div class="stop-num">1</div>
+              <div class="stop-body">
+                <p class="stop-name">Goulburn</p>
+                <p class="stop-detail">Overnight · Big Merino Hotel · 2 hrs from Sydney</p>
+                <div class="stop-tags"><span class="stag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span><span class="stag" style="background:#f5e8c0;color:#4a3000;">Good Finds</span></div>
+              </div>
+              <div class="stop-icons">✏ ⋮</div>
+            </div>
+            <div class="stop-hover-card">
+              <div class="hover-photo"><div class="ratio-box"><div class="photo-ph" id="hover-goulburn" style="background:#4a7c59;"></div></div></div>
+              <div class="hover-body"><div class="hover-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</div><div class="hover-name">Goulburn</div><div class="hover-desc">Australia's first inland city — convict history, the Big Merino, and great coffee on the main street.</div><div class="hover-dist">📍 2 hrs from Sydney · On route</div><div class="hover-actions"><span class="hover-btn-p">+ Add stop</span><span class="hover-btn-s">More info</span></div></div>
+            </div>
+          </div>
+          <div class="stop">
+            <div class="stop-thumb"><div class="ratio-box" style="padding-top:0;height:100%;min-height:90px;"><div class="photo-ph" id="stop-thumb-2" style="background:#3d6b4a;"></div></div></div>
+            <div class="stop-main">
+              <div class="stop-num">2</div>
+              <div class="stop-body">
+                <p class="stop-name">Binalong</p>
+                <p class="stop-detail">Overnight · Sports oval caravan park · 3.5 hrs from Sydney</p>
+                <div class="stop-tags"><span class="stag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span><span class="stag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></div>
+              </div>
+              <div class="stop-icons">✏ ⋮</div>
+            </div>
+            <div class="stop-hover-card">
+              <div class="hover-photo"><div class="ratio-box"><div class="photo-ph" id="hover-binalong" style="background:#3d6b4a;"></div></div></div>
+              <div class="hover-body"><div class="hover-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</div><div class="hover-name">Binalong</div><div class="hover-desc">A quiet village with connections to Banjo Paterson and bushranger history. Peaceful overnight stop.</div><div class="hover-dist">📍 3.5 hrs from Sydney · On route</div><div class="hover-actions"><span class="hover-btn-p">+ Add stop</span><span class="hover-btn-s">More info</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT RAIL — Discover nearby -->
+    <aside class="home-rail">
+      <div class="rail-header">
+        <p class="rail-title">Nearby to discover</p>
+        <span class="rail-action">See all</span>
+      </div>
+      <div class="rail-cards">
+
+        <div class="rcard">
+          <div class="rcard-photo" id="dcard-banjo" style="background:#c49020;"></div>
+          <div class="rcard-body">
+            <div class="rcard-tag-row"><span class="rcard-cat-dot" style="background:#c49020;"></span><span class="dtag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span></div>
+            <p class="rcard-name">Birthplace of Banjo Paterson</p>
+            <p class="rcard-desc">Australia's most beloved poet, born near Orange in 1864.</p>
+            <p class="rcard-dist">📍 4 km off route · Free</p>
+            <div class="rcard-actions"><span class="rcard-btn-p">+ Add to route</span><span class="rcard-btn-s">More info</span></div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <div class="rcard-photo" id="dcard-burrinjuck" style="background:#2e5f8a;"></div>
+          <div class="rcard-body">
+            <div class="rcard-tag-row"><span class="rcard-cat-dot" style="background:#2d6a4f;"></span><span class="dtag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span></div>
+            <p class="rcard-name">Burrinjuck Waters State Park</p>
+            <p class="rcard-desc">Kayak hire, free camping, stunning reservoir surrounded by bush.</p>
+            <p class="rcard-dist">📍 12 km off route · Free camping</p>
+            <div class="rcard-actions"><span class="rcard-btn-p">+ Add to route</span><span class="rcard-btn-s">More info</span></div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <div class="rcard-photo" id="dcard-gilberts" style="background:#c4552f;"></div>
+          <div class="rcard-body">
+            <div class="rcard-tag-row"><span class="rcard-cat-dot" style="background:#c4552f;"></span><span class="dtag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></div>
+            <p class="rcard-name">Gilbert's Grave</p>
+            <p class="rcard-desc">Bushranger Johnny Gilbert buried in the centre of Binalong.</p>
+            <p class="rcard-dist">📍 On route · In Binalong · Free</p>
+            <div class="rcard-actions"><span class="rcard-btn-p">+ Add to route</span><span class="rcard-btn-s">More info</span></div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <div class="rcard-photo" style="background:#3a2560;"></div>
+          <div class="rcard-body">
+            <div class="rcard-tag-row"><span class="rcard-cat-dot" style="background:#3a2560;"></span><span class="dtag" style="background:#e8e0f5;color:#3a2560;">Creative Towns</span></div>
+            <p class="rcard-name">Braidwood</p>
+            <p class="rcard-desc">Classified heritage town, galleries, great bakery and Saturday market.</p>
+            <p class="rcard-dist">📍 28 km off route</p>
+            <div class="rcard-actions"><span class="rcard-btn-p">+ Add to route</span><span class="rcard-btn-s">More info</span></div>
+          </div>
+        </div>
+
+        <div class="rcard">
+          <div class="rcard-photo" style="background:#2e5f8a;"></div>
+          <div class="rcard-body">
+            <div class="rcard-tag-row"><span class="rcard-cat-dot" style="background:#2e5f8a;"></span><span class="dtag" style="background:#d8e8f5;color:#1c3150;">Good Finds</span></div>
+            <p class="rcard-name">Grooving on Goulburn</p>
+            <p class="rcard-desc">Local favourite café with outstanding coffee and homemade pies.</p>
+            <p class="rcard-dist">📍 In Goulburn · On route</p>
+            <div class="rcard-actions"><span class="rcard-btn-p">+ Add to route</span><span class="rcard-btn-s">More info</span></div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+</div>
+
+
+<!-- ========================
+     SCREEN 2: ROUTE BUILDER
+     ======================== -->
+<div class="screen hidden" id="screen-builder">
+  <nav class="nav">
+    <div class="nav-logo"><span class="nav-logo-dot"></span>Unbeaten Track</div>
+    <div class="nav-links">
+      <span class="nav-link active">Plan</span><span class="nav-link">Discover</span><span class="nav-link">Map</span><span class="nav-link">Library</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-cta">+ New journey</span>
+      <div class="nav-avatar">KR</div>
+    </div>
+  </nav>
+
+  <div class="journey-bar">
+    <div><div class="journey-bar-title">Sydney to Melbourne the good way</div><div class="journey-bar-meta">Route builder · Day 1 of 3</div></div>
+    <div class="journey-bar-stats">
+      <div class="jstat"><div class="jstat-val">740</div><div class="jstat-lbl">km total</div></div>
+      <div class="jstat"><div class="jstat-val">3</div><div class="jstat-lbl">stops today</div></div>
+      <div class="jstat"><div class="jstat-val">4.5</div><div class="jstat-lbl">hrs drive</div></div>
+    </div>
+    <div class="jbar-actions">
+      <div class="view-toggle">
+        <span class="view-toggle-btn active">⊞ Map</span>
+        <span class="view-toggle-btn" onclick="showScreen('table')" style="cursor:pointer;">☰ Table</span>
+      </div>
+      <span class="jbar-btn jbar-btn-ghost" onclick="showScreen('home')" style="cursor:pointer;">← Back to journey</span>
+      <span class="jbar-btn jbar-btn-primary">Save route</span>
+    </div>
+  </div>
+
+  <div class="rb-columns" style="flex:1;overflow:hidden;">
+    <div class="panel-left" style="position:relative;">
+      <div class="panel-tabs">
+        <div class="panel-tab active">Itinerary</div>
+        <div class="panel-tab">Notes</div>
+        <div class="panel-tab">Settings</div>
+      </div>
+      <div class="day-selector">
+        <span class="day-btn active">Day 1</span>
+        <span class="day-btn">Day 2</span>
+        <span class="day-btn">Day 3</span>
+        <span class="day-add">+ Add day</span>
+      </div>
+
+      <!-- SEARCH PANEL -->
+      <div class="panel-search-wrap">
+        <div class="panel-search-inner">
+          <span style="color:#7a8578;font-size:15px;flex-shrink:0;">🔍</span>
+          <input class="panel-search-input" placeholder="Search towns, landmarks, attractions..." value="Banjo Paterson" />
+          <span style="font-size:13px;color:#7a8578;cursor:pointer;">✕</span>
+        </div>
+        <div class="panel-search-chips">
+          <span class="sfchip on">All</span>
+          <span class="sfchip">Towns</span>
+          <span class="sfchip">Wild Places</span>
+          <span class="sfchip">Deep Roots</span>
+          <span class="sfchip">Local Legends</span>
+        </div>
+        <!-- FLYOUT removed from here — placed directly in rb-columns below -->
+      </div>
+
+      <div class="itin-list">
+        <div class="itin-start"><span class="itin-start-dot"></span><div><div class="itin-label">Sydney</div><div class="itin-sub">Departure · 8:00 am</div></div></div>
+        <div class="drive-gap"><div class="drive-vert"></div><span class="drive-pill">2 hrs drive</span></div>
+
+        <div class="rb-stop-card">
+          <div class="rb-thumb"><div class="photo-ph" id="rb-thumb-1" style="background:#4a7c59;"></div></div>
+          <div class="rb-stop-inner">
+            <div class="drag-handle"><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div></div>
+            <div class="rb-stop-num" style="background:#ddeee4;color:#1e3d28;">1</div>
+            <div class="rb-stop-info"><div class="rb-stop-name">Goulburn</div><div class="rb-stop-detail">Town stop · 30–60 min</div><div class="rb-stop-tags"><span class="stag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span><span class="stag" style="background:#f5e8c0;color:#4a3000;">Good Finds</span></div></div>
+            <div class="rb-stop-actions"><div class="rb-action-btn" title="Move up">▲</div><div class="rb-action-btn" title="Move down">▼</div><div class="rb-action-btn" title="Remove">✕</div></div>
+          </div>
+          <div class="stop-hover-card" style="left:100%;bottom:0;top:auto;transform:none;">
+            <div class="hover-photo"><div class="ratio-box"><div class="photo-ph" id="hover-rb-goulburn" style="background:#4a7c59;"></div></div></div>
+            <div class="hover-body"><div class="hover-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</div><div class="hover-name">Goulburn</div><div class="hover-desc">Australia's first inland city, with a rich convict and pastoral history.</div><div class="hover-dist">📍 2 hrs from Sydney · On route</div><div class="hover-actions"><span class="hover-btn-s">More info</span></div></div>
+          </div>
+        </div>
+
+        <div class="drive-gap"><div class="drive-vert"></div><span class="drive-pill">45 min drive</span></div>
+
+        <div class="rb-stop-card">
+          <div class="rb-thumb"><div class="photo-ph" id="rb-thumb-2" style="background:#8b4513;"></div></div>
+          <div class="rb-stop-inner">
+            <div class="drag-handle"><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div></div>
+            <div class="rb-stop-num" style="background:#ddeee4;color:#1e3d28;">2</div>
+            <div class="rb-stop-info"><div class="rb-stop-name">Rocky Hill Memorial</div><div class="rb-stop-detail">Deep Roots · 20 min stop</div><div class="rb-stop-tags"><span class="stag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></div></div>
+            <div class="rb-stop-actions"><div class="rb-action-btn">▲</div><div class="rb-action-btn">▼</div><div class="rb-action-btn">✕</div></div>
+          </div>
+          <div class="stop-hover-card" style="left:100%;bottom:0;top:auto;transform:none;">
+            <div class="hover-photo"><div class="ratio-box"><div class="photo-ph" id="hover-rb-rocky" style="background:#8b4513;"></div></div></div>
+            <div class="hover-body"><div class="hover-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</div><div class="hover-name">Rocky Hill War Memorial</div><div class="hover-desc">Striking hilltop memorial with panoramic views over Goulburn.</div><div class="hover-dist">📍 In Goulburn · Free</div><div class="hover-actions"><span class="hover-btn-s">More info</span></div></div>
+          </div>
+        </div>
+
+        <div class="drive-gap"><div class="drive-vert"></div><span class="drive-pill">1 hr 20 min drive</span></div>
+
+        <div class="rb-stop-card overnight" style="flex-direction:column;">
+          <div style="display:flex;">
+            <div class="rb-thumb"><div class="photo-ph" id="rb-thumb-3" style="background:#3d6b4a;"></div></div>
+            <div class="rb-stop-inner">
+              <div class="drag-handle"><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div><div class="drag-dot-row"><span class="drag-dot"></span><span class="drag-dot"></span></div></div>
+              <div class="rb-stop-num" style="background:#1e3d28;color:#fff;">3</div>
+              <div class="rb-stop-info"><div class="rb-stop-name">Binalong</div><div class="rb-stop-detail">Overnight stop</div><div class="rb-stop-tags"><span class="stag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span><span class="stag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></div></div>
+              <div class="rb-stop-actions"><div class="rb-action-btn">▲</div><div class="rb-action-btn">▼</div><div class="rb-action-btn">✕</div></div>
+            </div>
+          </div>
+          <div class="overnight-bar"><span>🌙</span><span class="overnight-text">Sports oval caravan park</span><span class="overnight-edit">Change</span></div>
+          <div class="stop-hover-card" style="left:100%;bottom:0;top:auto;transform:none;">
+            <div class="hover-photo"><div class="ratio-box"><div class="photo-ph" id="hover-rb-binalong" style="background:#3d6b4a;"></div></div></div>
+            <div class="hover-body"><div class="hover-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</div><div class="hover-name">Binalong</div><div class="hover-desc">A quiet village with connections to Banjo Paterson and bushranger history.</div><div class="hover-dist">📍 3.5 hrs from Sydney</div><div class="hover-actions"><span class="hover-btn-s">More info</span></div></div>
+          </div>
+        </div>
+
+        <div class="add-stop-row">+ Add stop to Day 1</div>
+      </div>
+    </div>
+
+    <!-- SEARCH FLYOUT — positioned absolute within rb-columns, left edge of map -->
+    <div class="search-flyout">
+      <div class="search-flyout-header">
+        <span class="search-flyout-title">3 results for "Banjo Paterson"</span>
+        <span class="search-flyout-meta">Near your route</span>
+      </div>
+      <div class="sr"><span class="sr-dot" style="background:#c49020;"></span>
+        <div class="sr-thumb"><div class="ratio-box sr-size"><div class="photo-ph" id="sr-thumb-1" style="background:#c49020;"></div></div></div>
+        <div class="sr-body"><div class="sr-name">Birthplace of Banjo Paterson</div><div class="sr-meta">Local Legends · Historical marker</div><div class="sr-dist">4 km off route · Near Binalong</div></div>
+        <div class="sr-add">+ Add</div>
+      </div>
+      <div class="sr"><span class="sr-dot" style="background:#c49020;"></span>
+        <div class="sr-thumb"><div class="ratio-box sr-size"><div class="photo-ph" id="sr-thumb-2" style="background:#8a6f20;"></div></div></div>
+        <div class="sr-body"><div class="sr-name">Banjo Paterson Park, Orange</div><div class="sr-meta">Local Legends · Park</div><div class="sr-dist">42 km off route</div></div>
+        <div class="sr-add">+ Add</div>
+      </div>
+      <div class="sr"><span class="sr-dot" style="background:#c49020;"></span>
+        <div class="sr-thumb"><div class="ratio-box sr-size"><div class="photo-ph" id="sr-thumb-3" style="background:#a07828;"></div></div></div>
+        <div class="sr-body"><div class="sr-name">Banjo Paterson Cottage Museum</div><div class="sr-meta">Local Legends · Museum · Yass</div><div class="sr-dist">5 km off route</div></div>
+        <div class="sr-add added">✓ Added</div>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="panel-map">
+      <svg class="map-svg" viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="900" height="700" fill="#e8ece6"/>
+        <ellipse cx="180" cy="200" rx="130" ry="80" fill="#dce5d8" opacity="0.55"/>
+        <ellipse cx="700" cy="350" rx="120" ry="150" fill="#dce5d8" opacity="0.5"/>
+        <ellipse cx="350" cy="500" rx="140" ry="90" fill="#dce5d8" opacity="0.45"/>
+        <ellipse cx="590" cy="490" rx="55" ry="38" fill="#c8dde8" opacity="0.85"/>
+        <text x="590" y="494" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#2e5f8a" font-weight="500">Burrinjuck</text>
+        <line x1="150" y1="0" x2="600" y2="700" stroke="#c8cdc4" stroke-width="2" opacity="0.5"/>
+        <line x1="0" y1="350" x2="900" y2="280" stroke="#c8cdc4" stroke-width="1.5" opacity="0.4"/>
+        <polyline points="450,60 420,190 395,310 365,435" fill="none" stroke="#4a7c59" stroke-width="3.5" stroke-dasharray="9,6" opacity="0.9"/>
+        <circle cx="450" cy="60" r="11" fill="#1e3d28"/><circle cx="450" cy="60" r="6" fill="#fff"/>
+        <rect x="465" y="47" width="80" height="30" rx="5" fill="#fff" opacity="0.93"/>
+        <text x="473" y="60" font-family="Inter,sans-serif" font-size="13" font-weight="600" fill="#1e3d28">Sydney</text>
+        <text x="473" y="72" font-family="Inter,sans-serif" font-size="10" fill="#4a5248">8:00 am</text>
+        <circle cx="420" cy="190" r="14" fill="#4a7c59"/>
+        <text x="420" y="195" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#fff">1</text>
+        <rect x="438" y="177" width="100" height="32" rx="5" fill="#fff" opacity="0.93"/>
+        <text x="446" y="191" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#2a2e28">Goulburn</text>
+        <text x="446" y="203" font-family="Inter,sans-serif" font-size="10" fill="#4a5248">Town stop</text>
+        <rect x="426" y="236" width="66" height="17" rx="4" fill="#fff" opacity="0.88"/>
+        <text x="459" y="248" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4a5248">45 min →</text>
+        <circle cx="395" cy="310" r="14" fill="#4a7c59"/>
+        <text x="395" y="315" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#fff">2</text>
+        <rect x="413" y="296" width="148" height="32" rx="5" fill="#fff" opacity="0.93"/>
+        <text x="421" y="310" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#2a2e28">Rocky Hill Memorial</text>
+        <text x="421" y="322" font-family="Inter,sans-serif" font-size="10" fill="#4a5248">Deep Roots · 20 min</text>
+        <rect x="370" y="358" width="94" height="17" rx="4" fill="#fff" opacity="0.88"/>
+        <text x="417" y="370" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4a5248">1 hr 20 min →</text>
+        <circle cx="365" cy="435" r="16" fill="#1e3d28"/>
+        <text x="365" y="440" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#fff">3</text>
+        <rect x="385" y="419" width="118" height="38" rx="5" fill="#fff" opacity="0.95"/>
+        <text x="393" y="433" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#2a2e28">Binalong</text>
+        <text x="393" y="447" font-family="Inter,sans-serif" font-size="10" fill="#1e3d28" font-weight="500">🌙 Overnight</text>
+        <circle cx="330" cy="410" r="9" fill="#c49020" stroke="#fff" stroke-width="2"/>
+        <text x="296" y="402" font-family="Inter,sans-serif" font-size="9" fill="#4a3000">Banjo's birthplace</text>
+        <circle cx="572" cy="468" r="8" fill="#2e5f8a" opacity="0.85"/>
+        <circle cx="350" cy="452" r="7" fill="#c4552f" opacity="0.85"/>
+        <line x1="700" y1="650" x2="800" y2="650" stroke="#4a5248" stroke-width="1.5"/>
+        <line x1="700" y1="645" x2="700" y2="655" stroke="#4a5248" stroke-width="1.5"/>
+        <line x1="800" y1="645" x2="800" y2="655" stroke="#4a5248" stroke-width="1.5"/>
+        <text x="750" y="643" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4a5248">50 km</text>
+      </svg>
+      <div class="map-popup" style="top:40%;left:50%;">
+        <div class="map-popup-inner">
+          <div class="map-popup-photo"><div class="ratio-box"><div class="photo-ph" id="popup-photo" style="background:#c49020;"></div></div></div>
+          <div class="map-popup-body">
+            <div class="map-popup-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</div>
+            <div class="map-popup-name">Birthplace of Banjo Paterson</div>
+            <div class="map-popup-detail">Historical marker · Narrambla</div>
+            <div class="map-popup-dist">📍 4 km off route · Free</div>
+          </div>
+          <div class="map-popup-actions">
+            <div class="map-popup-btn map-popup-btn-primary">+ Add to Day 1</div>
+            <div class="map-popup-btn map-popup-btn-secondary">More info</div>
+          </div>
+        </div>
+        <div class="map-popup-arrow"></div>
+      </div>
+      <div class="map-controls">
+        <div class="map-ctrl-btn">+</div>
+        <div class="map-ctrl-btn">−</div>
+        <div class="map-ctrl-btn" style="font-size:14px;">⊕</div>
+      </div>
+      <div class="map-type-toggle">
+        <span class="map-type-btn active">Road</span>
+        <span class="map-type-btn">Terrain</span>
+        <span class="map-type-btn">Satellite</span>
+      </div>
+      <div class="map-legend">
+        <div class="map-legend-title">Legend</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#1e3d28;"></span> Overnight stop</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#4a7c59;"></span> Day stop</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#c49020;"></span> Local Legends</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#c4552f;"></span> Deep Roots</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#2e5f8a;"></span> Good Finds</div>
+        <div class="map-legend-item"><span class="map-legend-line"></span> Route</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================
+     SCREEN 3: TABLE VIEW
+     ======================== -->
+<div class="screen hidden" id="screen-table">
+  <nav class="nav">
+    <div class="nav-logo"><span class="nav-logo-dot"></span>Unbeaten Track</div>
+    <div class="nav-links">
+      <span class="nav-link active">Plan</span><span class="nav-link">Discover</span><span class="nav-link">Map</span><span class="nav-link">Library</span>
+    </div>
+    <div class="nav-right">
+      <span class="nav-cta">+ New journey</span>
+      <div class="nav-avatar">KR</div>
+    </div>
+  </nav>
+
+  <div class="journey-bar">
+    <div><div class="journey-bar-title">Sydney to Melbourne the good way</div><div class="journey-bar-meta">Itinerary · 3 days · 12 stops</div></div>
+    <div class="journey-bar-stats">
+      <div class="jstat"><div class="jstat-val">740</div><div class="jstat-lbl">km total</div></div>
+      <div class="jstat"><div class="jstat-val">9.5</div><div class="jstat-lbl">hrs drive</div></div>
+    </div>
+    <div class="jbar-actions">
+      <div class="view-toggle">
+        <span class="view-toggle-btn" onclick="showScreen('builder')" style="cursor:pointer;">⊞ Map</span>
+        <span class="view-toggle-btn active">☰ Table</span>
+      </div>
+      <span class="jbar-btn jbar-btn-ghost" onclick="showScreen('home')" style="cursor:pointer;">← Back to journey</span>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="tv-toolbar">
+    <span class="tv-btn" onclick="toggleEditAll()">✏ Edit all rows</span>
+    <span class="tv-btn tv-btn-green">⬇ Export to Excel</span>
+    <span style="font-size:12px;color:#7a8578;margin-left:4px;">Tip: hover any row and click Edit to update individual stops</span>
+  </div>
+
+  <!-- EDIT ALL BAR -->
+  <div id="editAllBar" style="display:none;" class="tv-edit-all-bar">
+    <span class="tv-edit-all-label">Editing all rows</span>
+    <span class="tv-edit-all-meta">Make changes across the full itinerary</span>
+    <span class="tv-edit-all-btn tv-edit-all-cancel" onclick="toggleEditAll()">Cancel</span>
+    <span class="tv-edit-all-btn tv-edit-all-save">Save all changes</span>
+  </div>
+
+  <div class="tv-body" id="tvBody">
+
+    <!-- DAY 1 -->
+    <div class="tv-day-block">
+      <div class="tv-day-header">
+        <span class="tv-day-label">Day 1</span>
+        <span class="tv-day-date" id="day1-date-display">Sat 14 Jun 2025</span>
+        <span class="tv-day-meta">Sydney to Binalong · 4 hr 5 min drive · 3 stops</span>
+        <div class="tv-day-actions">
+          <span class="tv-day-btn" onclick="editDayDate(1)">✏ Edit date</span>
+          <span class="tv-day-btn danger">✕ Remove day</span>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="tv-thumb-cell"></th>
+            <th style="width:200px;">Stop</th>
+            <th style="width:120px;">Type</th>
+            <th style="width:160px;">Category</th>
+            <th style="width:110px;">Drive time</th>
+            <th style="width:110px;">Duration</th>
+            <th>Notes</th>
+            <th style="width:150px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#2d5c3f;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Sydney</td><td class="muted">Departure</td><td>—</td><td class="muted">—</td><td class="muted">—</td>
+            <td class="muted">Start of journey · 8:00 am</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span></div></td>
+          </tr>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" id="tv-thumb-1" style="background:#4a7c59;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Goulburn</td><td class="muted">Town stop</td>
+            <td><span class="tv-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span><span class="tv-tag" style="background:#f5e8c0;color:#4a3000;">Good Finds</span></td>
+            <td class="muted">2 hrs</td><td class="muted">30–60 min</td>
+            <td class="muted">Big Merino, Goulburn Brewery</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" id="tv-thumb-2" style="background:#8b4513;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Rocky Hill Memorial</td><td class="muted">POI stop</td>
+            <td><span class="tv-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></td>
+            <td class="muted">45 min</td><td class="muted">20 min</td>
+            <td class="muted">Panoramic views, free entry</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+          <tr class="overnight-row">
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" id="tv-thumb-3" style="background:#3d6b4a;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Binalong 🌙</td><td class="muted">Overnight</td>
+            <td><span class="tv-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span></td>
+            <td class="muted">1 hr 20 min</td><td class="muted">Overnight</td>
+            <td class="muted">Sports oval caravan park · Powered site</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tv-add-row" onclick="addRow(this)">+ Add stop to Day 1</div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="tv-day-block">
+      <div class="tv-day-header">
+        <span class="tv-day-label">Day 2</span>
+        <span class="tv-day-date" id="day2-date-display">Sun 15 Jun 2025</span>
+        <span class="tv-day-meta">Binalong to Holbrook · 3 hr 10 min drive · 4 stops</span>
+        <div class="tv-day-actions">
+          <span class="tv-day-btn" onclick="editDayDate(2)">✏ Edit date</span>
+          <span class="tv-day-btn danger">✕ Remove day</span>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="tv-thumb-cell"></th>
+            <th style="width:200px;">Stop</th>
+            <th style="width:120px;">Type</th>
+            <th style="width:160px;">Category</th>
+            <th style="width:110px;">Drive time</th>
+            <th style="width:110px;">Duration</th>
+            <th>Notes</th>
+            <th style="width:150px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#2e5f8a;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Burrinjuck Waters</td><td class="muted">Detour</td>
+            <td><span class="tv-tag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span></td>
+            <td class="muted">30 min</td><td class="muted">1–2 hrs</td>
+            <td class="muted">Kayak hire, morning swim</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#4a7c59;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Gundagai</td><td class="muted">Town stop</td>
+            <td><span class="tv-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span><span class="tv-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span></td>
+            <td class="muted">1 hr</td><td class="muted">45 min</td>
+            <td class="muted">Dog on the Tuckerbox, lunch stop</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+          <tr class="overnight-row">
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#4a5248;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Holbrook 🌙</td><td class="muted">Overnight</td>
+            <td><span class="tv-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></td>
+            <td class="muted">1 hr</td><td class="muted">Overnight</td>
+            <td class="muted">Holbrook Hotel · Check in 2pm</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tv-add-row" onclick="addRow(this)">+ Add stop to Day 2</div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="tv-day-block">
+      <div class="tv-day-header">
+        <span class="tv-day-label">Day 3</span>
+        <span class="tv-day-date" id="day3-date-display">Mon 16 Jun 2025</span>
+        <span class="tv-day-meta">Holbrook to Melbourne · 3 hr 45 min drive · 3 stops</span>
+        <div class="tv-day-actions">
+          <span class="tv-day-btn" onclick="editDayDate(3)">✏ Edit date</span>
+          <span class="tv-day-btn danger">✕ Remove day</span>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th class="tv-thumb-cell"></th>
+            <th style="width:200px;">Stop</th>
+            <th style="width:120px;">Type</th>
+            <th style="width:160px;">Category</th>
+            <th style="width:110px;">Drive time</th>
+            <th style="width:110px;">Duration</th>
+            <th>Notes</th>
+            <th style="width:150px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#2a3a28;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Albury</td><td class="muted">Town stop</td>
+            <td><span class="tv-tag" style="background:#e8ede5;color:#2a3a28;">Working Australia</span></td>
+            <td class="muted">45 min</td><td class="muted">1 hr</td>
+            <td class="muted">Border crossing, Murray River walk</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#c49020;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Chiltern</td><td class="muted">Town stop</td>
+            <td><span class="tv-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span></td>
+            <td class="muted">1 hr</td><td class="muted">30 min</td>
+            <td class="muted">Henry Handel Richardson's birthplace</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>
+          </tr>
+          <tr>
+            <td class="tv-thumb-cell"><div class="tv-thumb-img"><div class="photo-ph" style="background:#2d5c3f;width:48px;height:32px;position:relative;border-radius:4px;inset:auto;"></div></div></td>
+            <td style="font-weight:600;">Melbourne</td><td class="muted">Arrival</td><td>—</td>
+            <td class="muted">2 hrs</td><td class="muted">—</td>
+            <td class="muted">End of journey · Est. 3:30 pm</td>
+            <td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn" onclick="editRow(this)">Edit</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="tv-add-row" onclick="addRow(this)">+ Add stop to Day 3</div>
+    </div>
+
+    <div class="tv-add-day" onclick="addDay()">+ Add new day</div>
+
+  </div>
+</div>
+
+</div><!-- end .screens -->
+
+<script>
+/* ---- PHOTO TOGGLE ---- */
+var photosOn = false;
+var photos = {
+  'hero-ph':           { ph: '#3d6b4a', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80' },
+  'stop-thumb-1':      { ph: '#4a7c59', url: 'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=300&q=80' },
+  'stop-thumb-2':      { ph: '#3d6b4a', url: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=300&q=80' },
+  'dcard-banjo':       { ph: '#c49020', url: 'https://images.unsplash.com/photo-504616074-a4b4f3a96fe1?w=600&q=80' },
+  'dcard-burrinjuck':  { ph: '#2e5f8a', url: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80' },
+  'dcard-gilberts':    { ph: '#c4552f', url: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600&q=80' },
+  'hover-goulburn':    { ph: '#4a7c59', url: 'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600&q=80' },
+  'hover-binalong':    { ph: '#3d6b4a', url: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=600&q=80' },
+  'hover-banjo':       { ph: '#c49020', url: 'https://images.unsplash.com/photo-504616074-a4b4f3a96fe1?w=600&q=80' },
+  'hover-burrinjuck':  { ph: '#2e5f8a', url: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80' },
+  'hover-gilberts':    { ph: '#c4552f', url: 'https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=600&q=80' },
+  'rb-thumb-1':        { ph: '#4a7c59', url: 'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=200&q=80' },
+  'rb-thumb-2':        { ph: '#8b4513', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80' },
+  'rb-thumb-3':        { ph: '#3d6b4a', url: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=200&q=80' },
+  'hover-rb-goulburn': { ph: '#4a7c59', url: 'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600&q=80' },
+  'hover-rb-rocky':    { ph: '#8b4513', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80' },
+  'hover-rb-binalong': { ph: '#3d6b4a', url: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=600&q=80' },
+  'sr-thumb-1':        { ph: '#c49020', url: 'https://images.unsplash.com/photo-504616074-a4b4f3a96fe1?w=120&q=80' },
+  'sr-thumb-2':        { ph: '#8a6f20', url: 'https://images.unsplash.com/photo-504616074-a4b4f3a96fe1?w=120&q=80' },
+  'sr-thumb-3':        { ph: '#a07828', url: 'https://images.unsplash.com/photo-504616074-a4b4f3a96fe1?w=120&q=80' },
+  'popup-photo':       { ph: '#c49020', url: 'https://images.unsplash.com/photo-504616074-a4b4f3a96fe1?w=480&q=80' },
+  'tv-thumb-1':        { ph: '#4a7c59', url: 'https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=100&q=80' },
+  'tv-thumb-2':        { ph: '#8b4513', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=100&q=80' },
+  'tv-thumb-3':        { ph: '#3d6b4a', url: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=100&q=80' }
+};
+function togglePhotos() {
+  photosOn = !photosOn;
+  var t = document.getElementById('photoToggle');
+  var s = document.getElementById('toggleStatus');
+  t.classList.toggle('on', photosOn);
+  s.textContent = photosOn ? 'On' : 'Off';
+  Object.keys(photos).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var d = photos[id];
+    if (photosOn) {
+      el.style.backgroundImage = 'url(' + d.url + ')';
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+    } else {
+      el.style.backgroundImage = 'none';
+      el.style.background = d.ph;
+    }
+  });
+}
+
+/* ---- SCREEN SWITCHER ---- */
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(function(s) {
+    s.classList.add('hidden');
+  });
+  document.querySelectorAll('.preview-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  document.getElementById('screen-' + name).classList.remove('hidden');
+  var btns = document.querySelectorAll('.preview-btn');
+  var map = { home: 0, builder: 1, table: 2 };
+  if (map[name] !== undefined) btns[map[name]].classList.add('active');
+}
+
+/* ---- TABLE VIEW: ROW EDIT ---- */
+var EDITABLE_COLS = [4, 5, 6]; // drive time, duration, notes
+function editRow(btn) {
+  var row = btn.closest('tr');
+  var isEditing = row.classList.contains('editing');
+  if (isEditing) {
+    row.classList.remove('editing');
+    row.querySelectorAll('input').forEach(function(inp) {
+      var td = inp.parentNode;
+      td.textContent = inp.value;
+      td.className = 'muted';
+    });
+    btn.textContent = 'Edit';
+    btn.classList.remove('save');
+  } else {
+    row.classList.add('editing');
+    var tds = row.querySelectorAll('td');
+    EDITABLE_COLS.forEach(function(i) {
+      if (tds[i] && !tds[i].querySelector('input')) {
+        var val = tds[i].textContent.trim();
+        tds[i].innerHTML = '<input class="tv-input" value="' + val + '" ' + (i < 6 ? 'style="width:80px;"' : '') + ' />';
+      }
+    });
+    btn.textContent = 'Save';
+    btn.classList.add('save');
+  }
+}
+
+/* ---- TABLE VIEW: EDIT ALL ---- */
+var editAllOn = false;
+function toggleEditAll() {
+  editAllOn = !editAllOn;
+  document.getElementById('editAllBar').style.display = editAllOn ? 'flex' : 'none';
+  document.querySelectorAll('#tvBody tbody tr').forEach(function(row) {
+    var tds = row.querySelectorAll('td');
+    if (editAllOn) {
+      row.classList.add('editing');
+      EDITABLE_COLS.forEach(function(i) {
+        if (tds[i] && !tds[i].querySelector('input')) {
+          var val = tds[i].textContent.trim();
+          tds[i].innerHTML = '<input class="tv-input" value="' + val + '" ' + (i < 6 ? 'style="width:80px;"' : '') + ' />';
+        }
+      });
+      var actions = row.querySelector('.tv-row-actions');
+      if (actions) actions.style.visibility = 'hidden';
+    } else {
+      row.classList.remove('editing');
+      EDITABLE_COLS.forEach(function(i) {
+        if (tds[i]) {
+          var inp = tds[i].querySelector('input');
+          if (inp) { tds[i].textContent = inp.value; tds[i].className = 'muted'; }
+        }
+      });
+      var actions = row.querySelector('.tv-row-actions');
+      if (actions) actions.style.visibility = 'visible';
+    }
+  });
+}
+
+/* ---- TABLE VIEW: MOVE ROW ---- */
+function moveRow(btn, dir) {
+  var row = btn.closest('tr');
+  var tbody = row.parentNode;
+  var rows = Array.from(tbody.querySelectorAll('tr'));
+  var idx = rows.indexOf(row);
+  var target = idx + dir;
+  if (target < 0 || target >= rows.length) return;
+  if (dir === -1) tbody.insertBefore(row, rows[target]);
+  else tbody.insertBefore(rows[target], row);
+}
+
+/* ---- TABLE VIEW: DELETE ROW ---- */
+function deleteRow(btn) {
+  var row = btn.closest('tr');
+  if (confirm('Remove this stop from the itinerary?')) row.remove();
+}
+
+/* ---- TABLE VIEW: ADD ROW ---- */
+function addRow(addBtn) {
+  var block = addBtn.closest('.tv-day-block');
+  var tbody = block.querySelector('tbody');
+  var newRow = document.createElement('tr');
+  newRow.classList.add('editing');
+  newRow.innerHTML = '<td class="tv-thumb-cell"><div class="tv-thumb-img"><div style="background:#dde0da;width:48px;height:32px;border-radius:4px;"></div></div></td>' +
+    '<td style="font-weight:600;"><input class="tv-input" placeholder="Stop name" /></td>' +
+    '<td><input class="tv-input" style="width:80px;" placeholder="Type" /></td>' +
+    '<td>—</td>' +
+    '<td><input class="tv-input" style="width:70px;" placeholder="Drive" /></td>' +
+    '<td><input class="tv-input" style="width:70px;" placeholder="Duration" /></td>' +
+    '<td><input class="tv-input" placeholder="Notes..." /></td>' +
+    '<td><div class="tv-row-actions"><span class="tv-row-btn move" onclick="moveRow(this,-1)">▲</span><span class="tv-row-btn move" onclick="moveRow(this,1)">▼</span><span class="tv-row-btn save" onclick="editRow(this)">Save</span><span class="tv-row-btn del" onclick="deleteRow(this)">✕</span></div></td>';
+  tbody.appendChild(newRow);
+  newRow.querySelector('input').focus();
+}
+
+/* ---- TABLE VIEW: EDIT DAY DATE ---- */
+function editDayDate(day) {
+  var display = document.getElementById('day' + day + '-date-display');
+  var current = display.textContent;
+  var input = document.createElement('input');
+  input.className = 'tv-day-date-input';
+  input.value = current;
+  input.onblur = function() {
+    display.textContent = input.value || current;
+    display.style.display = '';
+    input.remove();
+  };
+  input.onkeydown = function(e) { if (e.key === 'Enter') input.blur(); };
+  display.style.display = 'none';
+  display.parentNode.insertBefore(input, display.nextSibling);
+  input.focus();
+  input.select();
+}
+
+/* ---- TABLE VIEW: ADD DAY ---- */
+var dayCount = 3;
+function addDay() {
+  dayCount++;
+  var tvBody = document.getElementById('tvBody');
+  var addDayBtn = tvBody.querySelector('.tv-add-day');
+  var block = document.createElement('div');
+  block.className = 'tv-day-block';
+  block.innerHTML =
+    '<div class="tv-day-header">' +
+      '<span class="tv-day-label">Day ' + dayCount + '</span>' +
+      '<span class="tv-day-date" id="day' + dayCount + '-date-display">Click to set date</span>' +
+      '<span class="tv-day-meta">No stops yet</span>' +
+      '<div class="tv-day-actions"><span class="tv-day-btn" onclick="editDayDate(' + dayCount + ')">✏ Edit date</span><span class="tv-day-btn danger">✕ Remove day</span></div>' +
+    '</div>' +
+    '<table><thead><tr>' +
+      '<th class="tv-thumb-cell"></th><th style="width:200px;">Stop</th><th style="width:120px;">Type</th><th style="width:160px;">Category</th>' +
+      '<th style="width:110px;">Drive time</th><th style="width:110px;">Duration</th><th>Notes</th><th style="width:150px;"></th>' +
+    '</tr></thead><tbody></tbody></table>' +
+    '<div class="tv-add-row" onclick="addRow(this)">+ Add stop to Day ' + dayCount + '</div>';
+  tvBody.insertBefore(block, addDayBtn);
+}
+</script>
+</body>
+</html>

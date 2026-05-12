@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Unbeaten Track — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.5715; background: #2a2e28; color: #4a5248; overflow: hidden; }
+
+/* PREVIEW NAV */
+.preview-nav { background: #2a2e28; height: 44px; display: flex; align-items: center; padding: 0 20px; gap: 8px; flex-shrink: 0; }
+.preview-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-right: 4px; }
+.preview-btn { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px; cursor: pointer; color: rgba(255,255,255,0.55); border: 1px solid transparent; background: none; }
+.preview-btn.active { background: #fff; color: #1e3d28; font-weight: 600; }
+.preview-btn:hover:not(.active) { color: #fff; border-color: rgba(255,255,255,0.2); }
+.preview-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+
+/* SHELL */
+.shell { height: calc(100vh - 44px); display: flex; overflow: hidden; background: #f4f5f2; }
+
+/* SIDEBAR */
+.sidebar { width: 220px; flex-shrink: 0; background: #1e3d28; display: flex; flex-direction: column; overflow-y: auto; }
+.sidebar-logo { padding: 18px 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 8px; }
+.sidebar-logo-dot { width: 9px; height: 9px; border-radius: 50%; background: #4a7c59; flex-shrink: 0; }
+.sidebar-logo-name { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: -0.2px; }
+.sidebar-logo-badge { font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); padding: 1px 6px; border-radius: 3px; margin-left: auto; }
+
+.sidebar-section { padding: 16px 10px 4px; }
+.sidebar-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 0 6px; margin-bottom: 4px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 6px; cursor: pointer; color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 500; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.nav-item.active { background: rgba(255,255,255,0.12); color: #fff; }
+.nav-item i { font-size: 16px; flex-shrink: 0; }
+.nav-badge { margin-left: auto; font-size: 10px; font-weight: 600; background: #4a7c59; color: #fff; padding: 1px 6px; border-radius: 10px; }
+.nav-badge.warn { background: #c4552f; }
+
+.sidebar-footer { margin-top: auto; padding: 12px 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-user { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+.sidebar-user:hover { background: rgba(255,255,255,0.06); }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; background: #4a7c59; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; }
+.user-name { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); }
+.user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+/* MAIN CONTENT */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.screens { flex: 1; overflow: hidden; position: relative; }
+.screen { position: absolute; inset: 0; display: none; flex-direction: column; background: #f4f5f2; overflow-y: auto; }
+.screen.active { display: flex; }
+
+/* PAGE HEADER */
+.page-header { background: #fff; border-bottom: 1px solid #dde0da; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.page-title { font-size: 18px; font-weight: 600; color: #2a2e28; }
+.page-subtitle { font-size: 12px; color: #7a8578; margin-top: 1px; }
+.page-actions { display: flex; gap: 8px; align-items: center; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 5px; border-radius: 7px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; border: none; }
+.btn-primary { background: #4a7c59; color: #fff; }
+.btn-neutral { background: #fff; color: #4a5248; border: 1px solid #dde0da; font-weight: 500; }
+.btn-danger-soft { background: #f5ddd6; color: #5c1f0f; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 20px 28px; flex-shrink: 0; }
+.stat-card { background: #fff; border: 1px solid #dde0da; border-radius: 8px; padding: 16px 18px; }
+.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #7a8578; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 600; color: #2a2e28; line-height: 1; }
+.stat-unit { font-size: 13px; font-weight: 400; color: #7a8578; }
+.stat-delta { font-size: 12px; margin-top: 4px; }
+.stat-delta.up { color: #2d6a4f; }
+.stat-delta.down { color: #c4552f; }
+
+/* CONTENT AREA */
+.content { padding: 0 28px 28px; flex: 1; }
+.content-2col { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+
+/* CARDS */
+.card { background: #fff; border: 1px solid #dde0da; border-radius: 8px; overflow: hidden; }
+.card-header { padding: 14px 16px; border-bottom: 1px solid #dde0da; display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 600; color: #2a2e28; }
+.card-subtitle { font-size: 11px; color: #7a8578; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { padding: 10px 14px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #7a8578; border-bottom: 1px solid #dde0da; background: #fafbf9; white-space: nowrap; }
+tbody tr { border-bottom: 1px solid #f4f5f2; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafbf9; }
+tbody td { padding: 11px 14px; color: #2a2e28; vertical-align: middle; }
+td.muted { color: #7a8578; font-size: 12px; }
+.td-actions { display: flex; gap: 6px; }
+
+/* BADGES */
+.badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+.badge-green { background: #ddeee4; color: #1e3d28; }
+.badge-amber { background: #f5e8c0; color: #4a3000; }
+.badge-red { background: #f5ddd6; color: #5c1f0f; }
+.badge-blue { background: #d8e8f5; color: #1c3150; }
+.badge-grey { background: #f4f5f2; color: #4a5248; border: 1px solid #dde0da; }
+
+/* TAG */
+.cat-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; }
+
+/* SEARCH & FILTERS */
+.toolbar { padding: 14px 16px; border-bottom: 1px solid #dde0da; display: flex; gap: 8px; align-items: center; background: #fff; flex-shrink: 0; }
+.search-input { background: #f4f5f2; border: 1px solid #dde0da; border-radius: 7px; padding: 7px 12px 7px 32px; font-size: 13px; color: #2a2e28; font-family: 'Inter', sans-serif; outline: none; width: 240px; position: relative; }
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #7a8578; font-size: 15px; pointer-events: none; }
+.filter-select { background: #fff; border: 1px solid #dde0da; border-radius: 7px; padding: 7px 12px; font-size: 13px; color: #4a5248; font-family: 'Inter', sans-serif; outline: none; cursor: pointer; }
+.toolbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.results-count { font-size: 12px; color: #7a8578; }
+
+/* FORM */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field.full { grid-column: 1 / -1; }
+.form-label { font-size: 12px; font-weight: 600; color: #2a2e28; }
+.form-input { background: #f4f5f2; border: 1px solid #dde0da; border-radius: 7px; padding: 8px 12px; font-size: 13px; color: #2a2e28; font-family: 'Inter', sans-serif; outline: none; }
+.form-textarea { background: #f4f5f2; border: 1px solid #dde0da; border-radius: 7px; padding: 8px 12px; font-size: 13px; color: #2a2e28; font-family: 'Inter', sans-serif; outline: none; resize: vertical; min-height: 80px; }
+.form-select { background: #fff; border: 1px solid #dde0da; border-radius: 7px; padding: 8px 12px; font-size: 13px; color: #2a2e28; font-family: 'Inter', sans-serif; outline: none; cursor: pointer; }
+.form-hint { font-size: 11px; color: #7a8578; }
+.form-section { padding: 16px; border-bottom: 1px solid #dde0da; }
+.form-section:last-child { border-bottom: none; }
+.form-section-title { font-size: 12px; font-weight: 600; color: #2a2e28; margin-bottom: 12px; }
+
+/* PHOTO UPLOAD */
+.photo-upload { border: 1.5px dashed #dde0da; border-radius: 8px; padding: 24px; text-align: center; background: #f9faf8; cursor: pointer; }
+.photo-upload:hover { border-color: #4a7c59; background: #f2f9f5; }
+.photo-upload-icon { font-size: 28px; color: #7a8578; margin-bottom: 8px; }
+.photo-upload-text { font-size: 13px; color: #4a5248; }
+.photo-upload-hint { font-size: 11px; color: #7a8578; margin-top: 4px; }
+
+/* ACTIVITY FEED */
+.activity-item { display: flex; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #f4f5f2; }
+.activity-item:last-child { border-bottom: none; }
+.activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.activity-text { font-size: 13px; color: #4a5248; flex: 1; }
+.activity-text strong { color: #2a2e28; font-weight: 600; }
+.activity-time { font-size: 11px; color: #7a8578; flex-shrink: 0; margin-top: 1px; }
+
+/* ALERT */
+.alert { display: flex; gap: 10px; padding: 12px 14px; border-radius: 8px; margin-bottom: 10px; font-size: 13px; }
+.alert-warn { background: #fef9ed; border: 1px solid #f5e8c0; color: #4a3000; }
+.alert-info { background: #f2f9f5; border: 1px solid #b8ddc8; color: #1e3d28; }
+
+/* STAT MINI */
+.stat-mini { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f4f5f2; }
+.stat-mini:last-child { border-bottom: none; }
+.stat-mini-label { font-size: 13px; color: #4a5248; }
+.stat-mini-value { font-size: 13px; font-weight: 600; color: #2a2e28; }
+
+/* BAR CHART */
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-label { font-size: 12px; color: #4a5248; width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 8px; background: #f4f5f2; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; background: #4a7c59; }
+.bar-count { font-size: 12px; color: #7a8578; width: 30px; text-align: right; flex-shrink: 0; }
+
+/* TOGGLE */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.toggle { width: 36px; height: 20px; border-radius: 10px; cursor: pointer; position: relative; flex-shrink: 0; }
+.toggle.on { background: #4a7c59; }
+.toggle.off { background: #dde0da; }
+.toggle-knob { width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; transition: left 0.15s; }
+.toggle.on .toggle-knob { left: 18px; }
+.toggle.off .toggle-knob { left: 2px; }
+.toggle-label { font-size: 13px; color: #4a5248; }
+
+/* MAP PLACEHOLDER */
+.map-ph { background: #e8ece6; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #7a8578; font-size: 13px; }
+
+/* PAGINATION */
+.pagination { display: flex; align-items: center; gap: 4px; padding: 14px 16px; border-top: 1px solid #dde0da; }
+.page-btn { width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid #dde0da; background: #fff; color: #4a5248; }
+.page-btn.active { background: #1e3d28; color: #fff; border-color: #1e3d28; }
+.page-btn:hover:not(.active) { background: #f4f5f2; }
+.page-info { font-size: 12px; color: #7a8578; margin-left: auto; }
+
+/* NARRATION */
+.narration-block { background: #f2f9f5; border-left: 3px solid #2d6a4f; border-radius: 0 8px 8px 0; padding: 10px 14px; margin-bottom: 10px; }
+.narration-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #2d6a4f; margin-bottom: 4px; }
+.narration-text { font-size: 13px; font-style: italic; color: #4a5248; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- PREVIEW NAV -->
+<div class="preview-nav">
+  <span class="preview-label">Screen</span>
+  <span class="preview-btn active" onclick="go('dashboard')">Dashboard</span>
+  <span class="preview-btn" onclick="go('towns')">Towns</span>
+  <span class="preview-btn" onclick="go('pois')">POIs</span>
+  <span class="preview-btn" onclick="go('poi-edit')">Edit POI</span>
+  <div class="preview-divider"></div>
+  <span class="preview-btn" onclick="go('narration')">Narration</span>
+  <span class="preview-btn" onclick="go('media')">Media</span>
+  <span class="preview-btn" onclick="go('users')">Users</span>
+  <span class="preview-btn" onclick="go('stats')">Statistics</span>
+</div>
+
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="sidebar-logo-dot"></span>
+    <span class="sidebar-logo-name">Unbeaten Track</span>
+    <span class="sidebar-logo-badge">Admin</span>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Overview</div>
+    <div class="nav-item active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+    <div class="nav-item" onclick="go('stats')"><i class="ti ti-chart-bar" aria-hidden="true"></i>Statistics</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Content</div>
+    <div class="nav-item" onclick="go('towns')"><i class="ti ti-map-pin" aria-hidden="true"></i>Towns<span class="nav-badge">248</span></div>
+    <div class="nav-item" onclick="go('pois')"><i class="ti ti-star" aria-hidden="true"></i>POIs<span class="nav-badge">1,842</span></div>
+    <div class="nav-item" onclick="go('narration')"><i class="ti ti-player-play" aria-hidden="true"></i>Narration<span class="nav-badge warn">14</span></div>
+    <div class="nav-item" onclick="go('media')"><i class="ti ti-photo" aria-hidden="true"></i>Media library</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">System</div>
+    <div class="nav-item" onclick="go('users')"><i class="ti ti-users" aria-hidden="true"></i>Users</div>
+    <div class="nav-item"><i class="ti ti-tag" aria-hidden="true"></i>Categories</div>
+    <div class="nav-item"><i class="ti ti-route" aria-hidden="true"></i>Journeys</div>
+    <div class="nav-item"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar">KR</div>
+      <div>
+        <div class="user-name">Kath Robertson</div>
+        <div class="user-role">Super admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- SCREENS -->
+<div class="main">
+<div class="screens">
+
+<!-- ==================
+     DASHBOARD
+     ================== -->
+<div class="screen active" id="screen-dashboard">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Dashboard</div>
+      <div class="page-subtitle">Good morning, Kath — here's what's happening</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-refresh" aria-hidden="true"></i>Refresh</span>
+      <span class="btn btn-primary btn-sm"><i class="ti ti-plus" aria-hidden="true"></i>Add content</span>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Towns</div>
+      <div class="stat-value">248 <span class="stat-unit"></span></div>
+      <div class="stat-delta up">↑ 12 this month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">POIs</div>
+      <div class="stat-value">1,842</div>
+      <div class="stat-delta up">↑ 67 this month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active users</div>
+      <div class="stat-value">3,410</div>
+      <div class="stat-delta up">↑ 8% vs last month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Journeys created</div>
+      <div class="stat-value">9,204</div>
+      <div class="stat-delta up">↑ 340 this week</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="alert alert-warn">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      <span><strong>14 narration scripts</strong> are missing for recently added route segments. <span style="color:#4a7c59;cursor:pointer;font-weight:500;">Review now →</span></span>
+    </div>
+    <div class="alert alert-info">
+      <i class="ti ti-info-circle" aria-hidden="true"></i>
+      <span><strong>32 POIs</strong> have been submitted by users and are awaiting review before publishing.</span>
+    </div>
+
+    <div class="content-2col">
+      <!-- Recent activity -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Recent activity</div>
+            <div class="card-subtitle">Last 48 hours</div>
+          </div>
+          <span class="btn btn-neutral btn-sm">View all</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot" style="background:#4a7c59;"></span>
+          <div class="activity-text"><strong>Goulburn Brewery</strong> was published as a new Good Finds POI</div>
+          <span class="activity-time">2h ago</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot" style="background:#c49020;"></span>
+          <div class="activity-text"><strong>Narration script</strong> updated for Hume Highway segment 4</div>
+          <span class="activity-time">5h ago</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot" style="background:#2e5f8a;"></span>
+          <div class="activity-text"><strong>Andrew Robertson</strong> added 8 new towns in Southern NSW</div>
+          <span class="activity-time">Yesterday</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot" style="background:#4a7c59;"></span>
+          <div class="activity-text"><strong>Binalong</strong> town profile photo updated</div>
+          <span class="activity-time">Yesterday</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot" style="background:#c4552f;"></span>
+          <div class="activity-text"><strong>User report</strong> flagged incorrect location for Gilbert's Grave</div>
+          <span class="activity-time">2 days ago</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-dot" style="background:#4a7c59;"></span>
+          <div class="activity-text"><strong>Braidwood</strong> Creative Towns profile completed and published</div>
+          <span class="activity-time">2 days ago</span>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <!-- Content health -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Content health</div></div>
+          <div style="padding:14px 16px;">
+            <div class="stat-mini">
+              <span class="stat-mini-label">Towns without photos</span>
+              <span class="stat-mini-value" style="color:#c4552f;">34</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">POIs without photos</span>
+              <span class="stat-mini-value" style="color:#c49020;">127</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">Missing narration scripts</span>
+              <span class="stat-mini-value" style="color:#c4552f;">14</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">Unpublished POIs</span>
+              <span class="stat-mini-value" style="color:#c49020;">32</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">User-reported issues</span>
+              <span class="stat-mini-value" style="color:#c4552f;">7</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">Towns fully complete</span>
+              <span class="stat-mini-value" style="color:#2d6a4f;">186 / 248</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top categories -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">POIs by category</div></div>
+          <div style="padding:14px 16px;">
+            <div class="bar-row"><span class="bar-label">Deep Roots</span><div class="bar-track"><div class="bar-fill" style="width:78%;background:#c4552f;"></div></div><span class="bar-count">482</span></div>
+            <div class="bar-row"><span class="bar-label">Wild Places</span><div class="bar-track"><div class="bar-fill" style="width:62%;"></div></div><span class="bar-count">384</span></div>
+            <div class="bar-row"><span class="bar-label">Good Finds</span><div class="bar-track"><div class="bar-fill" style="width:54%;background:#2e5f8a;"></div></div><span class="bar-count">334</span></div>
+            <div class="bar-row"><span class="bar-label">Local Legends</span><div class="bar-track"><div class="bar-fill" style="width:42%;background:#c49020;"></div></div><span class="bar-count">260</span></div>
+            <div class="bar-row"><span class="bar-label">Creative Towns</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:#3a2560;"></div></div><span class="bar-count">186</span></div>
+            <div class="bar-row"><span class="bar-label">Working Australia</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:#2a3a28;"></div></div><span class="bar-count">136</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     TOWNS
+     ================== -->
+<div class="screen" id="screen-towns">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Towns</div>
+      <div class="page-subtitle">248 towns · 186 published · 62 draft</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-download" aria-hidden="true"></i>Export</span>
+      <span class="btn btn-primary btn-sm"><i class="ti ti-plus" aria-hidden="true"></i>Add town</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ti ti-search search-icon" aria-hidden="true"></i>
+      <input class="search-input" placeholder="Search towns..." value="" />
+    </div>
+    <select class="filter-select"><option>All states</option><option selected>NSW</option><option>VIC</option><option>QLD</option><option>SA</option><option>WA</option></select>
+    <select class="filter-select"><option>All status</option><option>Published</option><option>Draft</option></select>
+    <select class="filter-select"><option>All completeness</option><option>Complete</option><option>Missing photo</option><option>Missing narration</option></select>
+    <div class="toolbar-right">
+      <span class="results-count">248 results</span>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:16px;">
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50px;"></th>
+            <th>Town</th>
+            <th>State</th>
+            <th>Region</th>
+            <th>POIs</th>
+            <th>Status</th>
+            <th>Completeness</th>
+            <th>Last updated</th>
+            <th style="width:100px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#4a7c59;"></div></td>
+            <td style="font-weight:600;">Goulburn</td>
+            <td class="muted">NSW</td>
+            <td class="muted">Southern Tablelands</td>
+            <td>12</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:#f4f5f2;border-radius:3px;overflow:hidden;"><div style="width:90%;height:100%;background:#4a7c59;border-radius:3px;"></div></div>
+                <span class="muted">90%</span>
+              </div>
+            </td>
+            <td class="muted">2 days ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#3d6b4a;"></div></td>
+            <td style="font-weight:600;">Binalong</td>
+            <td class="muted">NSW</td>
+            <td class="muted">Southern Tablelands</td>
+            <td>7</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:#f4f5f2;border-radius:3px;overflow:hidden;"><div style="width:75%;height:100%;background:#4a7c59;border-radius:3px;"></div></div>
+                <span class="muted">75%</span>
+              </div>
+            </td>
+            <td class="muted">4 days ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#c49020;"></div></td>
+            <td style="font-weight:600;">Braidwood</td>
+            <td class="muted">NSW</td>
+            <td class="muted">Monaro</td>
+            <td>9</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:#f4f5f2;border-radius:3px;overflow:hidden;"><div style="width:100%;height:100%;background:#4a7c59;border-radius:3px;"></div></div>
+                <span class="muted">100%</span>
+              </div>
+            </td>
+            <td class="muted">1 week ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#dde0da;"></div></td>
+            <td style="font-weight:600;">Yass</td>
+            <td class="muted">NSW</td>
+            <td class="muted">Southern Tablelands</td>
+            <td>5</td>
+            <td><span class="badge badge-amber">Draft</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:#f4f5f2;border-radius:3px;overflow:hidden;"><div style="width:45%;height:100%;background:#c49020;border-radius:3px;"></div></div>
+                <span class="muted">45%</span>
+              </div>
+            </td>
+            <td class="muted">2 weeks ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#2e5f8a;"></div></td>
+            <td style="font-weight:600;">Gundagai</td>
+            <td class="muted">NSW</td>
+            <td class="muted">Riverina</td>
+            <td>8</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:#f4f5f2;border-radius:3px;overflow:hidden;"><div style="width:80%;height:100%;background:#4a7c59;border-radius:3px;"></div></div>
+                <span class="muted">80%</span>
+              </div>
+            </td>
+            <td class="muted">3 days ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#dde0da;"></div></td>
+            <td style="font-weight:600;">Holbrook</td>
+            <td class="muted">NSW</td>
+            <td class="muted">Riverina</td>
+            <td>4</td>
+            <td><span class="badge badge-amber">Draft</span></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <div style="flex:1;height:6px;background:#f4f5f2;border-radius:3px;overflow:hidden;"><div style="width:30%;height:100%;background:#c4552f;border-radius:3px;"></div></div>
+                <span class="muted">30%</span>
+              </div>
+            </td>
+            <td class="muted">1 month ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i></span></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span class="page-btn"><i class="ti ti-chevron-left" style="font-size:13px;" aria-hidden="true"></i></span>
+        <span class="page-btn active">1</span>
+        <span class="page-btn">2</span>
+        <span class="page-btn">3</span>
+        <span style="font-size:13px;color:#7a8578;padding:0 4px;">…</span>
+        <span class="page-btn">21</span>
+        <span class="page-btn"><i class="ti ti-chevron-right" style="font-size:13px;" aria-hidden="true"></i></span>
+        <span class="page-info">Showing 1–12 of 248</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     POIs
+     ================== -->
+<div class="screen" id="screen-pois">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Points of interest</div>
+      <div class="page-subtitle">1,842 POIs · 32 awaiting review</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-download" aria-hidden="true"></i>Export</span>
+      <span class="btn btn-primary btn-sm" onclick="go('poi-edit')"><i class="ti ti-plus" aria-hidden="true"></i>Add POI</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ti ti-search search-icon" aria-hidden="true"></i>
+      <input class="search-input" placeholder="Search POIs..." />
+    </div>
+    <select class="filter-select"><option>All categories</option><option>Deep Roots</option><option>Local Legends</option><option>Wild Places</option><option>Good Finds</option><option>Creative Towns</option><option>Working Australia</option></select>
+    <select class="filter-select"><option>All states</option><option>NSW</option><option>VIC</option></select>
+    <select class="filter-select"><option>All status</option><option>Published</option><option>Draft</option><option>Pending review</option></select>
+    <div class="toolbar-right">
+      <span class="results-count">1,842 results</span>
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-layout-grid" aria-hidden="true"></i></span>
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-list" aria-hidden="true"></i></span>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:16px;">
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50px;"></th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Town</th>
+            <th>State</th>
+            <th>Detour</th>
+            <th>Status</th>
+            <th>Photo</th>
+            <th style="width:120px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#c4552f;"></div></td>
+            <td style="font-weight:600;">Gilbert's Grave</td>
+            <td><span class="cat-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></td>
+            <td class="muted">Binalong</td>
+            <td class="muted">NSW</td>
+            <td class="muted">On route</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td><span class="badge badge-green"><i class="ti ti-check" style="font-size:11px;" aria-hidden="true"></i></span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm" onclick="go('poi-edit')">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-trash" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#c49020;"></div></td>
+            <td style="font-weight:600;">Birthplace of Banjo Paterson</td>
+            <td><span class="cat-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span></td>
+            <td class="muted">Binalong</td>
+            <td class="muted">NSW</td>
+            <td class="muted">4 km</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td><span class="badge badge-green"><i class="ti ti-check" style="font-size:11px;" aria-hidden="true"></i></span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm" onclick="go('poi-edit')">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-trash" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#2e5f8a;"></div></td>
+            <td style="font-weight:600;">Burrinjuck Waters State Park</td>
+            <td><span class="cat-tag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span></td>
+            <td class="muted">Wee Jasper</td>
+            <td class="muted">NSW</td>
+            <td class="muted">12 km</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td><span class="badge badge-green"><i class="ti ti-check" style="font-size:11px;" aria-hidden="true"></i></span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm" onclick="go('poi-edit')">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-trash" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#dde0da;"></div></td>
+            <td style="font-weight:600;">Rocky Hill War Memorial</td>
+            <td><span class="cat-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></td>
+            <td class="muted">Goulburn</td>
+            <td class="muted">NSW</td>
+            <td class="muted">On route</td>
+            <td><span class="badge badge-amber">Draft</span></td>
+            <td><span class="badge badge-red"><i class="ti ti-x" style="font-size:11px;" aria-hidden="true"></i></span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm" onclick="go('poi-edit')">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-trash" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#3a2560;"></div></td>
+            <td style="font-weight:600;">Braidwood Saturday Market</td>
+            <td><span class="cat-tag" style="background:#e8e0f5;color:#3a2560;">Creative Towns</span></td>
+            <td class="muted">Braidwood</td>
+            <td class="muted">NSW</td>
+            <td class="muted">On route</td>
+            <td><span class="badge badge-blue">Pending</span></td>
+            <td><span class="badge badge-red"><i class="ti ti-x" style="font-size:11px;" aria-hidden="true"></i></span></td>
+            <td><div class="td-actions"><span class="btn btn-primary btn-sm">Review</span><span class="btn btn-neutral btn-sm"><i class="ti ti-trash" aria-hidden="true"></i></span></div></td>
+          </tr>
+          <tr>
+            <td><div style="width:40px;height:28px;border-radius:4px;background:#4a7c59;"></div></td>
+            <td style="font-weight:600;">Pejar Dam</td>
+            <td><span class="cat-tag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span></td>
+            <td class="muted">Goulburn</td>
+            <td class="muted">NSW</td>
+            <td class="muted">8 km</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td><span class="badge badge-green"><i class="ti ti-check" style="font-size:11px;" aria-hidden="true"></i></span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm" onclick="go('poi-edit')">Edit</span><span class="btn btn-neutral btn-sm"><i class="ti ti-trash" aria-hidden="true"></i></span></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span class="page-btn"><i class="ti ti-chevron-left" style="font-size:13px;" aria-hidden="true"></i></span>
+        <span class="page-btn active">1</span>
+        <span class="page-btn">2</span>
+        <span class="page-btn">3</span>
+        <span style="font-size:13px;color:#7a8578;padding:0 4px;">…</span>
+        <span class="page-btn">154</span>
+        <span class="page-btn"><i class="ti ti-chevron-right" style="font-size:13px;" aria-hidden="true"></i></span>
+        <span class="page-info">Showing 1–12 of 1,842</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     EDIT POI
+     ================== -->
+<div class="screen" id="screen-poi-edit">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Edit POI</div>
+      <div class="page-subtitle">Gilbert's Grave · Deep Roots · Binalong NSW</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-neutral btn-sm" onclick="go('pois')">← Back to POIs</span>
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-eye" aria-hidden="true"></i>Preview</span>
+      <span class="btn btn-danger-soft btn-sm"><i class="ti ti-archive" aria-hidden="true"></i>Unpublish</span>
+      <span class="btn btn-primary btn-sm"><i class="ti ti-check" aria-hidden="true"></i>Save changes</span>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:16px;">
+    <div class="content-2col">
+      <!-- Left: form -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="form-section">
+            <div class="form-section-title">Basic information</div>
+            <div class="form-grid">
+              <div class="form-field full">
+                <label class="form-label">Name</label>
+                <input class="form-input" value="Gilbert's Grave" />
+              </div>
+              <div class="form-field">
+                <label class="form-label">Category</label>
+                <select class="form-select">
+                  <option selected>Deep Roots</option>
+                  <option>Local Legends</option>
+                  <option>Wild Places</option>
+                  <option>Good Finds</option>
+                  <option>Creative Towns</option>
+                  <option>Working Australia</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Town</label>
+                <select class="form-select"><option selected>Binalong</option><option>Goulburn</option></select>
+              </div>
+              <div class="form-field full">
+                <label class="form-label">Short description <span style="color:#7a8578;font-weight:400;">(shown in cards, max 120 chars)</span></label>
+                <input class="form-input" value="Bushranger Johnny Gilbert, one of Ben Hall's gang, buried in the town cemetery." />
+              </div>
+              <div class="form-field full">
+                <label class="form-label">Full description <span style="color:#7a8578;font-weight:400;">(shown on detail page)</span></label>
+                <textarea class="form-textarea">Johnny Gilbert was one of the most celebrated bushrangers of the colonial era, riding with Ben Hall's gang throughout the 1860s. He was shot and killed by police in 1865, and is buried in the Binalong cemetery in an unusual civic location — right in the centre of town. A striking and unusual piece of bushranger history that is free to visit and right on your route.</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Location</div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label class="form-label">Latitude</label>
+                <input class="form-input" value="-34.6712" />
+              </div>
+              <div class="form-field">
+                <label class="form-label">Longitude</label>
+                <input class="form-input" value="148.6584" />
+              </div>
+              <div class="form-field full">
+                <label class="form-label">Distance from route</label>
+                <select class="form-select">
+                  <option selected>On route</option>
+                  <option>Less than 5 km detour</option>
+                  <option>5–15 km detour</option>
+                  <option>15–30 km detour</option>
+                  <option>More than 30 km</option>
+                </select>
+              </div>
+            </div>
+            <div class="map-ph" style="height:160px;margin-top:12px;">[ Map pin — MapLibre GL ]</div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Practical details</div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label class="form-label">Entry cost</label>
+                <select class="form-select"><option selected>Free</option><option>Paid</option><option>Donation</option></select>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Suggested time</label>
+                <select class="form-select"><option>10 min</option><option selected>20 min</option><option>30–60 min</option><option>Half day</option><option>Full day</option></select>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Pet friendly</label>
+                <div class="toggle-wrap" style="margin-top:8px;">
+                  <div class="toggle on"><div class="toggle-knob"></div></div>
+                  <span class="toggle-label">Yes</span>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Caravan accessible</label>
+                <div class="toggle-wrap" style="margin-top:8px;">
+                  <div class="toggle on"><div class="toggle-knob"></div></div>
+                  <span class="toggle-label">Yes</span>
+                </div>
+              </div>
+              <div class="form-field full">
+                <label class="form-label">Opening hours <span style="color:#7a8578;font-weight:400;">(leave blank if always open)</span></label>
+                <input class="form-input" placeholder="e.g. Mon–Fri 9am–5pm" />
+                <span class="form-hint">Always open — no hours needed for this POI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: photo, status, narration -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Photo</div></div>
+          <div style="padding:14px 16px;">
+            <div style="width:100%;padding-top:66.67%;background:#c4552f;border-radius:6px;margin-bottom:12px;position:relative;overflow:hidden;">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:12px;">[ 3:2 photo ]</div>
+            </div>
+            <div class="photo-upload">
+              <div class="photo-upload-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
+              <div class="photo-upload-text">Upload new photo</div>
+              <div class="photo-upload-hint">3:2 ratio · JPG or PNG · Max 5MB</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Publishing</div></div>
+          <div style="padding:14px 16px;">
+            <div class="stat-mini">
+              <span class="stat-mini-label">Status</span>
+              <span class="badge badge-green">Published</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">Created</span>
+              <span class="stat-mini-value" style="font-weight:400;font-size:12px;color:#7a8578;">12 Mar 2025 · A. Robertson</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">Last edited</span>
+              <span class="stat-mini-value" style="font-weight:400;font-size:12px;color:#7a8578;">2 days ago · K. Robertson</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">Times added to journey</span>
+              <span class="stat-mini-value">284</span>
+            </div>
+            <div class="stat-mini">
+              <span class="stat-mini-label">User rating</span>
+              <span class="stat-mini-value">4.7 / 5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Drive-past narration</div>
+            <span class="badge badge-green">Script complete</span>
+          </div>
+          <div style="padding:14px 16px;">
+            <div class="narration-block">
+              <div class="narration-lbl">Preview</div>
+              <div class="narration-text">"Coming up on your left is the Binalong cemetery — and inside it, one of the most unusual graves in New South Wales. Johnny Gilbert, the bushranger who rode with Ben Hall, is buried right here in the centre of town."</div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+              <span class="btn btn-neutral btn-sm" style="flex:1;justify-content:center;"><i class="ti ti-edit" aria-hidden="true"></i>Edit script</span>
+              <span class="btn btn-neutral btn-sm"><i class="ti ti-player-play" aria-hidden="true"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     NARRATION
+     ================== -->
+<div class="screen" id="screen-narration">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Drive-past narration</div>
+      <div class="page-subtitle">Manage audio scripts for route segments and POIs</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-primary btn-sm"><i class="ti ti-plus" aria-hidden="true"></i>Add script</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ti ti-search search-icon" aria-hidden="true"></i>
+      <input class="search-input" placeholder="Search narration..." />
+    </div>
+    <select class="filter-select"><option>All types</option><option>POI narration</option><option>Route segment</option><option>Town arrival</option></select>
+    <select class="filter-select"><option>All status</option><option selected>Missing script</option><option>Draft</option><option>Published</option></select>
+    <div class="toolbar-right">
+      <span class="badge badge-red">14 missing</span>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:16px;">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-header" style="background:#fef9ed;border-bottom-color:#f5e8c0;">
+        <div><div class="card-title" style="color:#4a3000;">14 narration scripts missing</div><div class="card-subtitle" style="color:#7a6030;">These POIs and route segments have no narration yet</div></div>
+        <span class="btn btn-neutral btn-sm">Dismiss</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Type</th><th>Category / Route</th><th>Status</th><th style="width:80px;"></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;">Rocky Hill War Memorial</td>
+            <td class="muted">POI narration</td>
+            <td><span class="cat-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span></td>
+            <td><span class="badge badge-red">Missing</span></td>
+            <td><span class="btn btn-primary btn-sm">Write</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Goulburn → Yass segment</td>
+            <td class="muted">Route segment</td>
+            <td class="muted">Hume Highway</td>
+            <td><span class="badge badge-red">Missing</span></td>
+            <td><span class="btn btn-primary btn-sm">Write</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Arriving in Holbrook</td>
+            <td class="muted">Town arrival</td>
+            <td class="muted">Holbrook NSW</td>
+            <td><span class="badge badge-red">Missing</span></td>
+            <td><span class="btn btn-primary btn-sm">Write</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Published narration</div></div>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Type</th><th>Duration</th><th>Status</th><th>Last updated</th><th style="width:100px;"></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;">Gilbert's Grave, Binalong</td>
+            <td class="muted">POI narration</td>
+            <td class="muted">38 sec</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td class="muted">2 days ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm"><i class="ti ti-player-play" aria-hidden="true"></i></span><span class="btn btn-neutral btn-sm">Edit</span></div></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Birthplace of Banjo Paterson</td>
+            <td class="muted">POI narration</td>
+            <td class="muted">44 sec</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td class="muted">1 week ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm"><i class="ti ti-player-play" aria-hidden="true"></i></span><span class="btn btn-neutral btn-sm">Edit</span></div></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Mount Terrible — Hume Highway</td>
+            <td class="muted">Route segment</td>
+            <td class="muted">29 sec</td>
+            <td><span class="badge badge-green">Published</span></td>
+            <td class="muted">2 weeks ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm"><i class="ti ti-player-play" aria-hidden="true"></i></span><span class="btn btn-neutral btn-sm">Edit</span></div></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Arriving in Goulburn</td>
+            <td class="muted">Town arrival</td>
+            <td class="muted">52 sec</td>
+            <td><span class="badge badge-amber">Draft</span></td>
+            <td class="muted">3 weeks ago</td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm"><i class="ti ti-player-play" aria-hidden="true"></i></span><span class="btn btn-neutral btn-sm">Edit</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     MEDIA
+     ================== -->
+<div class="screen" id="screen-media">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Media library</div>
+      <div class="page-subtitle">4,280 photos · All 3:2 ratio</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-filter" aria-hidden="true"></i>Filter</span>
+      <span class="btn btn-primary btn-sm"><i class="ti ti-upload" aria-hidden="true"></i>Upload photos</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ti ti-search search-icon" aria-hidden="true"></i>
+      <input class="search-input" placeholder="Search by town, POI or tag..." />
+    </div>
+    <select class="filter-select"><option>All types</option><option>Town</option><option>POI</option><option>Unassigned</option></select>
+    <select class="filter-select"><option>All states</option><option>NSW</option><option>VIC</option></select>
+    <div class="toolbar-right">
+      <span class="results-count">4,280 photos</span>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:16px;">
+    <div class="alert alert-warn" style="margin-bottom:14px;">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      <span><strong>48 photos</strong> are unassigned and not linked to any town or POI. <span style="color:#4a7c59;cursor:pointer;font-weight:500;">Review →</span></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;">
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#4a7c59;position:relative;"><div style="position:absolute;inset:0;"></div></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Binalong</div><div style="font-size:10px;color:#7a8578;">Town</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#c4552f;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Gilbert's Grave</div><div style="font-size:10px;color:#7a8578;">Deep Roots</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#c49020;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Banjo Paterson</div><div style="font-size:10px;color:#7a8578;">Local Legends</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#2e5f8a;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Burrinjuck Waters</div><div style="font-size:10px;color:#7a8578;">Wild Places</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:2px solid #4a7c59;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#3d6b4a;position:relative;"></div>
+        <div style="padding:6px 8px;background:#f2f9f5;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Goulburn</div><div style="font-size:10px;color:#4a7c59;">Selected</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#3a2560;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Braidwood</div><div style="font-size:10px;color:#7a8578;">Creative Towns</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #f5ddd6;cursor:pointer;background:#fef9f7;">
+        <div style="padding-top:66.67%;background:#f4f5f2;position:relative;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#7a8578;font-size:11px;">Unassigned</div></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#c4552f;">No POI linked</div><div style="font-size:10px;color:#7a8578;">Review needed</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#2a3a28;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Holbrook</div><div style="font-size:10px;color:#7a8578;">Town</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#4a5248;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Yass</div><div style="font-size:10px;color:#7a8578;">Town</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#c4552f;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Goulburn Gaol</div><div style="font-size:10px;color:#7a8578;">Deep Roots</div></div>
+      </div>
+      <div style="border-radius:6px;overflow:hidden;border:1px solid #dde0da;cursor:pointer;">
+        <div style="padding-top:66.67%;background:#4a7c59;position:relative;"></div>
+        <div style="padding:6px 8px;background:#fff;"><div style="font-size:11px;font-weight:600;color:#2a2e28;">Pejar Dam</div><div style="font-size:10px;color:#7a8578;">Wild Places</div></div>
+      </div>
+      <div style="border-radius:6px;border:1.5px dashed #dde0da;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:16px;background:#f9faf8;">
+        <i class="ti ti-upload" style="font-size:22px;color:#7a8578;" aria-hidden="true"></i>
+        <span style="font-size:11px;color:#7a8578;">Upload</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     USERS
+     ================== -->
+<div class="screen" id="screen-users">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Users</div>
+      <div class="page-subtitle">3,410 registered users · 2 admins</div>
+    </div>
+    <div class="page-actions">
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-download" aria-hidden="true"></i>Export</span>
+      <span class="btn btn-primary btn-sm"><i class="ti ti-plus" aria-hidden="true"></i>Invite admin</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="ti ti-search search-icon" aria-hidden="true"></i>
+      <input class="search-input" placeholder="Search by name or email..." />
+    </div>
+    <select class="filter-select"><option>All roles</option><option>Super admin</option><option>Editor</option><option>User</option></select>
+    <select class="filter-select"><option>All status</option><option>Active</option><option>Inactive</option><option>Suspended</option></select>
+    <div class="toolbar-right">
+      <span class="results-count">3,410 users</span>
+    </div>
+  </div>
+
+  <div class="content" style="padding-top:16px;">
+    <div class="card">
+      <div class="card-header" style="background:#f2f9f5;">
+        <div class="card-title">Admin users</div>
+        <span class="badge badge-green">2 admins</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>User</th><th>Role</th><th>Email</th><th>Last active</th><th>Status</th><th style="width:80px;"></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:#4a7c59;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;">KR</div>
+                <span style="font-weight:600;">Kath Robertson</span>
+              </div>
+            </td>
+            <td><span class="badge badge-green">Super admin</span></td>
+            <td class="muted">kath@unbeatentrack.com.au</td>
+            <td class="muted">Now</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><span class="btn btn-neutral btn-sm">Edit</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:#2e5f8a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;">AR</div>
+                <span style="font-weight:600;">Andrew Robertson</span>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">Editor</span></td>
+            <td class="muted">andrew@unbeatentrack.com.au</td>
+            <td class="muted">2 hours ago</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><span class="btn btn-neutral btn-sm">Edit</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header"><div class="card-title">Registered users</div></div>
+      <table>
+        <thead>
+          <tr><th>User</th><th>Email</th><th>Journeys</th><th>Joined</th><th>Last active</th><th>Status</th><th style="width:100px;"></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:#ddeee4;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#1e3d28;">SJ</div>
+                <span style="font-weight:500;">Sandra J.</span>
+              </div>
+            </td>
+            <td class="muted">sandra.j@gmail.com</td>
+            <td>12</td>
+            <td class="muted">Jan 2025</td>
+            <td class="muted">Today</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">View</span><span class="btn btn-danger-soft btn-sm">Suspend</span></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:#f5e8c0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#4a3000;">BM</div>
+                <span style="font-weight:500;">Brian M.</span>
+              </div>
+            </td>
+            <td class="muted">brian.m@hotmail.com</td>
+            <td>7</td>
+            <td class="muted">Feb 2025</td>
+            <td class="muted">3 days ago</td>
+            <td><span class="badge badge-green">Active</span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">View</span><span class="btn btn-danger-soft btn-sm">Suspend</span></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:28px;height:28px;border-radius:50%;background:#f4f5f2;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#4a5248;">TC</div>
+                <span style="font-weight:500;">T. Collins</span>
+              </div>
+            </td>
+            <td class="muted">t.collins@outlook.com</td>
+            <td>1</td>
+            <td class="muted">Apr 2025</td>
+            <td class="muted">2 weeks ago</td>
+            <td><span class="badge badge-grey">Inactive</span></td>
+            <td><div class="td-actions"><span class="btn btn-neutral btn-sm">View</span><span class="btn btn-danger-soft btn-sm">Suspend</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span class="page-btn active">1</span>
+        <span class="page-btn">2</span>
+        <span class="page-btn">3</span>
+        <span style="font-size:13px;color:#7a8578;padding:0 4px;">…</span>
+        <span class="page-btn">285</span>
+        <span class="page-info">Showing 1–12 of 3,410</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================
+     STATISTICS
+     ================== -->
+<div class="screen" id="screen-stats">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Statistics</div>
+      <div class="page-subtitle">Usage analytics and content performance</div>
+    </div>
+    <div class="page-actions">
+      <select class="filter-select">
+        <option>Last 30 days</option>
+        <option>Last 90 days</option>
+        <option>This year</option>
+        <option>All time</option>
+      </select>
+      <span class="btn btn-neutral btn-sm"><i class="ti ti-download" aria-hidden="true"></i>Export report</span>
+    </div>
+  </div>
+
+  <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
+    <div class="stat-card">
+      <div class="stat-label">New users</div>
+      <div class="stat-value">842</div>
+      <div class="stat-delta up">↑ 24% vs prev period</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Journeys created</div>
+      <div class="stat-value">2,340</div>
+      <div class="stat-delta up">↑ 18% vs prev period</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">POIs added to journeys</div>
+      <div class="stat-value">18,420</div>
+      <div class="stat-delta up">↑ 31% vs prev period</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg stops per journey</div>
+      <div class="stat-value">7.9</div>
+      <div class="stat-delta up">↑ from 6.4 last period</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="content-2col">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Most added POIs</div><span class="badge badge-grey">Last 30 days</span></div>
+          <div style="padding:14px 16px;">
+            <div class="bar-row"><span class="bar-label">Gilbert's Grave</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:#c4552f;"></div></div><span class="bar-count">284</span></div>
+            <div class="bar-row"><span class="bar-label">Banjo Paterson</span><div class="bar-track"><div class="bar-fill" style="width:88%;background:#c49020;"></div></div><span class="bar-count">249</span></div>
+            <div class="bar-row"><span class="bar-label">Burrinjuck Waters</span><div class="bar-track"><div class="bar-fill" style="width:74%;background:#2e5f8a;"></div></div><span class="bar-count">210</span></div>
+            <div class="bar-row"><span class="bar-label">Dog on the Tuckerbox</span><div class="bar-track"><div class="bar-fill" style="width:62%;background:#c49020;"></div></div><span class="bar-count">176</span></div>
+            <div class="bar-row"><span class="bar-label">Braidwood Market</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:#3a2560;"></div></div><span class="bar-count">142</span></div>
+            <div class="bar-row"><span class="bar-label">Pejar Dam</span><div class="bar-track"><div class="bar-fill" style="width:40%;"></div></div><span class="bar-count">112</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Most visited towns</div><span class="badge badge-grey">By journey frequency</span></div>
+          <div style="padding:14px 16px;">
+            <div class="bar-row"><span class="bar-label">Goulburn</span><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div><span class="bar-count">1,840</span></div>
+            <div class="bar-row"><span class="bar-label">Gundagai</span><div class="bar-track"><div class="bar-fill" style="width:76%;"></div></div><span class="bar-count">1,398</span></div>
+            <div class="bar-row"><span class="bar-label">Binalong</span><div class="bar-track"><div class="bar-fill" style="width:68%;"></div></div><span class="bar-count">1,250</span></div>
+            <div class="bar-row"><span class="bar-label">Braidwood</span><div class="bar-track"><div class="bar-fill" style="width:55%;"></div></div><span class="bar-count">1,012</span></div>
+            <div class="bar-row"><span class="bar-label">Holbrook</span><div class="bar-track"><div class="bar-fill" style="width:44%;"></div></div><span class="bar-count">810</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Journey breakdown</div></div>
+          <div style="padding:14px 16px;">
+            <div class="stat-mini"><span class="stat-mini-label">Avg journey length</span><span class="stat-mini-value">3.2 days</span></div>
+            <div class="stat-mini"><span class="stat-mini-label">Avg distance</span><span class="stat-mini-value">580 km</span></div>
+            <div class="stat-mini"><span class="stat-mini-label">Most popular duration</span><span class="stat-mini-value">3 days</span></div>
+            <div class="stat-mini"><span class="stat-mini-label">Caravan journeys</span><span class="stat-mini-value">68%</span></div>
+            <div class="stat-mini"><span class="stat-mini-label">Pet friendly filter used</span><span class="stat-mini-value">44%</span></div>
+            <div class="stat-mini"><span class="stat-mini-label">Travel mode sessions</span><span class="stat-mini-value">3,210</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Category popularity</div><span class="badge badge-grey">% of POIs added</span></div>
+          <div style="padding:14px 16px;">
+            <div class="bar-row"><span class="bar-label">Deep Roots</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:#c4552f;"></div></div><span class="bar-count">34%</span></div>
+            <div class="bar-row"><span class="bar-label">Wild Places</span><div class="bar-track"><div class="bar-fill" style="width:68%;"></div></div><span class="bar-count">28%</span></div>
+            <div class="bar-row"><span class="bar-label">Local Legends</span><div class="bar-track"><div class="bar-fill" style="width:55%;background:#c49020;"></div></div><span class="bar-count">23%</span></div>
+            <div class="bar-row"><span class="bar-label">Good Finds</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:#2e5f8a;"></div></div><span class="bar-count">10%</span></div>
+            <div class="bar-row"><span class="bar-label">Creative Towns</span><div class="bar-track"><div class="bar-fill" style="width:14%;background:#3a2560;"></div></div><span class="bar-count">5%</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">User-reported issues</div><span class="badge badge-red">7 open</span></div>
+          <div style="padding:0;">
+            <div class="activity-item">
+              <span class="activity-dot" style="background:#c4552f;"></span>
+              <div class="activity-text"><strong>Gilbert's Grave</strong> — incorrect pin location reported</div>
+              <span class="activity-time">2d</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-dot" style="background:#c49020;"></span>
+              <div class="activity-text"><strong>Banjo Paterson marker</strong> — opening hours incorrect</div>
+              <span class="activity-time">4d</span>
+            </div>
+            <div class="activity-item">
+              <span class="activity-dot" style="background:#c4552f;"></span>
+              <div class="activity-text"><strong>Goulburn Brewery</strong> — permanently closed, remove</div>
+              <span class="activity-time">1w</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .screens -->
+</div><!-- end .main -->
+</div><!-- end .shell -->
+
+<script>
+function go(screen) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.preview-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+
+  var target = document.getElementById('screen-' + screen);
+  if (target) target.classList.add('active');
+
+  var map = {
+    'dashboard': 0, 'towns': 1, 'pois': 2, 'poi-edit': 3,
+    'narration': 4, 'media': 5, 'users': 6, 'stats': 7
+  };
+  var btns = document.querySelectorAll('.preview-btn');
+  if (map[screen] !== undefined && btns[map[screen]]) btns[map[screen]].classList.add('active');
+
+  var navMap = {
+    'dashboard': 0, 'stats': 1, 'towns': 2, 'pois': 3,
+    'narration': 4, 'media': 5, 'users': 6
+  };
+  var navItems = document.querySelectorAll('.nav-item');
+  if (navMap[screen] !== undefined && navItems[navMap[screen]]) navItems[navMap[screen]].classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unbeaten Track — Design System & Style Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body { font-family: 'Inter', system-ui, sans-serif; background: #f4f5f2; color: #4a5248; line-height: 1.6; }
+
+/* PAGE LAYOUT */
+.page { max-width: 960px; margin: 0 auto; padding: 48px 32px 80px; }
+
+/* HEADER */
+.doc-header { border-bottom: 2px solid #1e3d28; padding-bottom: 32px; margin-bottom: 48px; }
+.doc-logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.doc-logo-dot { width: 12px; height: 12px; border-radius: 50%; background: #4a7c59; }
+.doc-logo-name { font-size: 20px; font-weight: 600; color: #1e3d28; letter-spacing: -0.3px; }
+.doc-title { font-size: 32px; font-weight: 600; color: #2a2e28; line-height: 1.1; margin-bottom: 8px; }
+.doc-subtitle { font-size: 15px; color: #4a5248; }
+.doc-meta { margin-top: 16px; display: flex; gap: 24px; }
+.doc-meta-item { font-size: 12px; color: #7a8578; }
+.doc-meta-item strong { color: #4a5248; font-weight: 500; }
+
+/* SECTIONS */
+.section { margin-bottom: 56px; }
+.section-title { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #4a7c59; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #dde0da; }
+.section-intro { font-size: 14px; color: #4a5248; margin-bottom: 20px; line-height: 1.6; }
+
+/* COLOUR PALETTE */
+.colour-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.colour-card { border-radius: 8px; overflow: hidden; border: 1px solid #dde0da; }
+.colour-swatch { height: 80px; }
+.colour-info { background: #fff; padding: 10px 12px; }
+.colour-name { font-size: 13px; font-weight: 600; color: #2a2e28; margin-bottom: 2px; }
+.colour-hex { font-size: 11px; font-family: monospace; color: #7a8578; }
+.colour-use { font-size: 11px; color: #4a5248; margin-top: 4px; line-height: 1.4; }
+.colour-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* CATEGORY COLOURS */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.cat-card { border-radius: 8px; overflow: hidden; border: 1px solid #dde0da; display: flex; }
+.cat-swatch { width: 8px; flex-shrink: 0; }
+.cat-info { background: #fff; padding: 10px 12px; flex: 1; }
+.cat-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 3px; margin-bottom: 6px; }
+.cat-name { font-size: 13px; font-weight: 600; color: #2a2e28; margin-bottom: 2px; }
+.cat-hex { font-size: 11px; font-family: monospace; color: #7a8578; }
+
+/* TYPOGRAPHY */
+.type-samples { display: flex; flex-direction: column; gap: 20px; }
+.type-row { background: #fff; border: 1px solid #dde0da; border-radius: 8px; padding: 20px 24px; display: flex; align-items: baseline; gap: 24px; }
+.type-label { font-size: 11px; font-weight: 600; color: #7a8578; letter-spacing: 0.06em; text-transform: uppercase; min-width: 140px; flex-shrink: 0; }
+.type-spec { font-size: 11px; font-family: monospace; color: #7a8578; min-width: 180px; flex-shrink: 0; }
+.type-sample { flex: 1; }
+.t-h1 { font-size: 30px; font-weight: 600; color: #2a2e28; line-height: 1.2; }
+.t-h2 { font-size: 20px; font-weight: 600; color: #2a2e28; line-height: 1.25; }
+.t-h3 { font-size: 16px; font-weight: 600; color: #2a2e28; }
+.t-body { font-size: 15px; font-weight: 400; color: #4a5248; }
+.t-medium { font-size: 15px; font-weight: 500; color: #2a2e28; }
+.t-small { font-size: 13px; font-weight: 400; color: #4a5248; }
+.t-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #7a8578; }
+.t-meta { font-size: 12px; font-weight: 400; color: #7a8578; }
+
+/* BUTTONS */
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; border-radius: 7px; padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; border: none; }
+.btn-primary { background: #4a7c59; color: #fff; }
+.btn-dark { background: #1e3d28; color: #fff; }
+.btn-ghost-dark { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5); }
+.btn-ghost-light { background: transparent; color: #1e3d28; border: 1.5px solid #1e3d28; }
+.btn-tint { background: #ddeee4; color: #1e3d28; }
+.btn-neutral { background: #fff; color: #4a5248; border: 1px solid #dde0da; }
+.btn-danger { background: #f5ddd6; color: #5c1f0f; }
+.btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
+.btn-context { font-size: 11px; color: #7a8578; margin-top: 4px; }
+.dark-bg { background: #1e3d28; padding: 16px 20px; border-radius: 8px; margin-bottom: 8px; }
+
+/* BADGES & TAGS */
+.badge-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 3px; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 4px 10px; border-radius: 12px; border: 1px solid #dde0da; color: #4a5248; background: #fff; }
+.pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+.pill.active { border-color: #4a7c59; color: #1e3d28; background: #ddeee4; }
+
+/* CARDS */
+.card-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.card { background: #fff; border: 1px solid #dde0da; border-radius: 8px; overflow: hidden; }
+.card-photo { height: 130px; background: #4a7c59; display: flex; align-items: center; justify-content: center; font-size: 12px; color: rgba(255,255,255,0.4); }
+.card-body { padding: 12px 14px; }
+.card-name { font-size: 14px; font-weight: 600; color: #2a2e28; margin-bottom: 4px; margin-top: 6px; }
+.card-desc { font-size: 12px; color: #4a5248; line-height: 1.5; }
+.card-dist { font-size: 11px; color: #7a8578; margin-top: 6px; }
+.stop-card { background: #fff; border: 1px solid #dde0da; border-radius: 8px; display: flex; overflow: hidden; margin-bottom: 8px; }
+.stop-thumb { width: 90px; height: 80px; background: #4a7c59; flex-shrink: 0; }
+.stop-main { padding: 10px 14px; flex: 1; }
+.stop-name { font-size: 15px; font-weight: 600; color: #2a2e28; }
+.stop-detail { font-size: 13px; color: #4a5248; margin-top: 2px; }
+
+/* FORM INPUTS */
+.input-row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.field { display: flex; flex-direction: column; gap: 5px; max-width: 400px; }
+.field-label { font-size: 12px; font-weight: 600; color: #2a2e28; letter-spacing: 0.02em; }
+.field-input { background: #f4f5f2; border: 1px solid #dde0da; border-radius: 7px; padding: 9px 14px; font-size: 14px; color: #2a2e28; font-family: 'Inter', sans-serif; outline: none; }
+.field-input:focus { border-color: #4a7c59; box-shadow: 0 0 0 3px rgba(74,124,89,0.12); }
+.field-input::placeholder { color: #7a8578; }
+.field-input.has-error { border-color: #c4552f; }
+
+/* SPACING */
+.spacing-row { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.spacing-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.spacing-block { background: #ddeee4; border: 1px solid #4a7c59; border-radius: 3px; width: 40px; }
+.spacing-label { font-size: 11px; font-family: monospace; color: #7a8578; }
+
+/* SHADOWS & RADIUS */
+.radius-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.radius-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.radius-box { width: 80px; height: 80px; background: #fff; border: 1px solid #dde0da; }
+.radius-label { font-size: 11px; font-family: monospace; color: #7a8578; text-align: center; }
+
+/* NAV */
+.nav-demo { background: #f4f5f2; border: 1px solid #dde0da; border-radius: 8px; padding: 0 20px; height: 52px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.nav-logo { font-weight: 600; font-size: 15px; color: #1e3d28; display: flex; align-items: center; gap: 8px; }
+.nav-logo-dot { width: 9px; height: 9px; border-radius: 50%; background: #4a7c59; }
+.nav-links { display: flex; gap: 4px; }
+.nav-link { font-size: 13px; padding: 6px 12px; border-radius: 6px; color: #4a5248; }
+.nav-link.active { color: #1e3d28; background: #fff; border: 1px solid #dde0da; font-weight: 500; }
+.nav-cta { background: #4a7c59; color: #fff; border: none; border-radius: 7px; padding: 7px 16px; font-size: 13px; font-weight: 600; }
+
+/* JOURNEY BAR */
+.journey-bar-demo { background: #1e3d28; border-radius: 8px; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.jb-title { font-size: 14px; font-weight: 600; color: #fff; }
+.jb-meta { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+.jb-stat { text-align: center; }
+.jb-val { font-size: 18px; font-weight: 600; color: #fff; line-height: 1; }
+.jb-lbl { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+.jb-stats { display: flex; gap: 24px; }
+
+/* NARRATION */
+.narration { background: #f2f9f5; border-left: 3px solid #2d6a4f; border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 12px; }
+.narration-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #2d6a4f; margin-bottom: 4px; }
+.narration-text { font-size: 14px; font-style: italic; color: #4a5248; line-height: 1.65; }
+
+/* CODE BLOCKS */
+.code-block { background: #2a2e28; border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; overflow-x: auto; }
+.code-block pre { font-family: monospace; font-size: 12px; color: #ddeee4; line-height: 1.7; white-space: pre; }
+.code-comment { color: #4a7c59; }
+.code-prop { color: #c49020; }
+.code-val { color: #ddeee4; }
+
+/* CURSOR NOTES */
+.cursor-note { background: #fff; border: 1px solid #dde0da; border-left: 3px solid #4a7c59; border-radius: 0 8px 8px 0; padding: 12px 16px; margin-bottom: 12px; font-size: 13px; color: #4a5248; line-height: 1.6; }
+.cursor-note strong { color: #2a2e28; font-weight: 600; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dde0da; border-radius: 8px; overflow: hidden; font-size: 13px; }
+thead th { background: #f4f5f2; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #7a8578; border-bottom: 1px solid #dde0da; }
+tbody td { padding: 10px 14px; border-bottom: 1px solid #f4f5f2; color: #2a2e28; vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody td.mono { font-family: monospace; font-size: 12px; color: #4a7c59; }
+
+/* PAGE BREAK HINT FOR PRINT */
+@media print {
+  .section { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-logo-row">
+    <span class="doc-logo-dot"></span>
+    <span class="doc-logo-name">Unbeaten Track</span>
+  </div>
+  <h1 class="doc-title">Design System &amp; Style Guide</h1>
+  <p class="doc-subtitle">Reference document for UI design, frontend development and Cursor handoff</p>
+  <div class="doc-meta">
+    <div class="doc-meta-item"><strong>Version</strong> 1.0</div>
+    <div class="doc-meta-item"><strong>Stack</strong> Laravel 13 / PHP 8.3 · Vite · Alpine.js · MapLibre GL</div>
+    <div class="doc-meta-item"><strong>Font</strong> Inter (Google Fonts)</div>
+    <div class="doc-meta-item"><strong>Template reference</strong> Limitless admin</div>
+  </div>
+</div>
+
+<!-- 1. COLOUR PALETTE -->
+<div class="section">
+  <p class="section-title">01 — Colour palette</p>
+  <p class="section-intro">All colours are defined as CSS custom properties on <code>:root</code>. Use the token names in code — never hardcode hex values directly into components.</p>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:10px;">Brand greens</p>
+  <div class="colour-grid" style="margin-bottom:20px;">
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#1e3d28;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Deep Forest</div>
+        <div class="colour-hex">--color-deep-forest: #1e3d28</div>
+        <div class="colour-use">Nav bar bg, journey bar bg, dark UI surfaces, heading text on light</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#4a7c59;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Bush Green</div>
+        <div class="colour-hex">--color-bush-green: #4a7c59</div>
+        <div class="colour-use">Primary CTA buttons, active states, logo mark, nav dot accent</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#2d6a4f;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Mid Green</div>
+        <div class="colour-hex">--color-mid-green: #2d6a4f</div>
+        <div class="colour-use">Narration block border, section labels, active underlines</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#ddeee4;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Green Tint</div>
+        <div class="colour-hex">--color-green-tint: #ddeee4</div>
+        <div class="colour-use">Button fill (light variant), active pill bg, hover states, tag bg</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#f2f9f5;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Green Wash</div>
+        <div class="colour-hex">--color-green-wash: #f2f9f5</div>
+        <div class="colour-use">Narration block bg, active journey card bg, overnight stop row</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#b8ddc8;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Green Border</div>
+        <div class="colour-hex">--color-green-border: #b8ddc8</div>
+        <div class="colour-use">Active card borders, overnight stop card border, dashed itinerary line</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:10px;">Neutrals</p>
+  <div class="colour-grid" style="margin-bottom:20px;">
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#f4f5f2;"></div>
+      <div class="colour-info">
+        <div class="colour-name">River Stone</div>
+        <div class="colour-hex">--color-river-stone: #f4f5f2</div>
+        <div class="colour-use">Page background, nav background, search field fill</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#ffffff; border-bottom:1px solid #dde0da;"></div>
+      <div class="colour-info">
+        <div class="colour-name">White</div>
+        <div class="colour-hex">--color-white: #ffffff</div>
+        <div class="colour-use">Card backgrounds, sidebar, active nav links, input backgrounds</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#dde0da;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Border</div>
+        <div class="colour-hex">--color-border: #dde0da</div>
+        <div class="colour-use">Card borders, dividers, nav border-bottom, input borders</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#2a2e28;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Near Black</div>
+        <div class="colour-hex">--color-near-black: #2a2e28</div>
+        <div class="colour-use">Headings, stop names, primary label text, table data</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#4a5248;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Charcoal</div>
+        <div class="colour-hex">--color-charcoal: #4a5248</div>
+        <div class="colour-use">Body text, stop details, descriptions, narration text</div>
+      </div>
+    </div>
+    <div class="colour-card">
+      <div class="colour-swatch" style="background:#7a8578;"></div>
+      <div class="colour-info">
+        <div class="colour-name">Mid Grey</div>
+        <div class="colour-hex">--color-mid-grey: #7a8578</div>
+        <div class="colour-use">Labels, placeholders, meta text, stat units, distance text</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:10px;">POI category colours</p>
+  <div class="cat-grid">
+    <div class="cat-card">
+      <div class="cat-swatch" style="background:#c4552f;"></div>
+      <div class="cat-info">
+        <span class="cat-tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span>
+        <div class="cat-name">Red Earth</div>
+        <div class="cat-hex">--color-cat-deep-roots: #c4552f · bg: #f5ddd6 · text: #5c1f0f</div>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-swatch" style="background:#c49020;"></div>
+      <div class="cat-info">
+        <span class="cat-tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span>
+        <div class="cat-name">Wattle Gold</div>
+        <div class="cat-hex">--color-cat-local-legends: #c49020 · bg: #f5e8c0 · text: #4a3000</div>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-swatch" style="background:#2e5f8a;"></div>
+      <div class="cat-info">
+        <span class="cat-tag" style="background:#d8e8f5;color:#1c3150;">Good Finds</span>
+        <div class="cat-name">Slate Blue</div>
+        <div class="cat-hex">--color-cat-good-finds: #2e5f8a · bg: #d8e8f5 · text: #1c3150</div>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-swatch" style="background:#3a2560;"></div>
+      <div class="cat-info">
+        <span class="cat-tag" style="background:#e8e0f5;color:#3a2560;">Creative Towns</span>
+        <div class="cat-name">Dusty Purple</div>
+        <div class="cat-hex">--color-cat-creative: #3a2560 · bg: #e8e0f5 · text: #3a2560</div>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-swatch" style="background:#2a3a28;"></div>
+      <div class="cat-info">
+        <span class="cat-tag" style="background:#e8ede5;color:#2a3a28;">Working Australia</span>
+        <div class="cat-name">Dark Sage</div>
+        <div class="cat-hex">--color-cat-working: #2a3a28 · bg: #e8ede5 · text: #2a3a28</div>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-swatch" style="background:#4a7c59;"></div>
+      <div class="cat-info">
+        <span class="cat-tag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span>
+        <div class="cat-name">Bush Green</div>
+        <div class="cat-hex">--color-cat-wild: #4a7c59 · bg: #ddeee4 · text: #1e3d28</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. TYPOGRAPHY -->
+<div class="section">
+  <p class="section-title">02 — Typography</p>
+  <p class="section-intro">Single typeface throughout — Inter via Google Fonts. Three weights only: 400 (regular), 500 (medium), 600 (semibold). No serif, no display font.</p>
+
+  <div class="code-block" style="margin-bottom:20px;">
+    <pre><span class="code-comment">/* Google Fonts import */</span>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+<span class="code-comment">/* Base */</span>
+<span class="code-prop">body</span> {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-charcoal);
+}</pre>
+  </div>
+
+  <div class="type-samples">
+    <div class="type-row">
+      <span class="type-label">H1 · Page heading</span>
+      <span class="type-spec">30px / 600 / 1.2</span>
+      <span class="type-sample t-h1">Sydney to Melbourne</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">H2 · Section heading</span>
+      <span class="type-spec">20px / 600 / 1.25</span>
+      <span class="type-sample t-h2">Stops · Day 1</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">H3 · Card heading</span>
+      <span class="type-spec">16px / 600 / 1.4</span>
+      <span class="type-sample t-h3">Goulburn</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">Body</span>
+      <span class="type-spec">15px / 400 / 1.6</span>
+      <span class="type-sample t-body">The road ahead follows a stock route used by drovers moving cattle from the high country.</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">Body medium</span>
+      <span class="type-spec">15px / 500 / 1.6</span>
+      <span class="type-sample t-medium">Overnight · Sports oval caravan park</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">Small / detail</span>
+      <span class="type-spec">13px / 400 / 1.55</span>
+      <span class="type-sample t-small">2 hrs from Sydney · On route · Caravan friendly</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">Label / eyebrow</span>
+      <span class="type-spec">11px / 600 / uppercase / 0.08em</span>
+      <span class="type-sample t-label">Current journey · Slow Roads</span>
+    </div>
+    <div class="type-row">
+      <span class="type-label">Meta / muted</span>
+      <span class="type-spec">12px / 400 / #7a8578</span>
+      <span class="type-sample t-meta">3 days · 740 km · Southern Tablelands</span>
+    </div>
+  </div>
+</div>
+
+<!-- 3. BUTTONS -->
+<div class="section">
+  <p class="section-title">03 — Buttons</p>
+  <p class="section-intro">Buttons use <code>display: inline-flex</code> — never <code>&lt;button&gt;</code> elements in Blade templates where widget styles may interfere. Border-radius 7px on standard buttons, 6px on small.</p>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:8px;">Standard buttons</p>
+  <div class="button-row" style="margin-bottom:6px;">
+    <span class="btn btn-primary">+ New journey</span>
+    <span class="btn btn-dark">Start travel mode</span>
+    <span class="btn btn-tint">Save route</span>
+    <span class="btn btn-neutral">Share</span>
+    <span class="btn btn-danger">Remove stop</span>
+  </div>
+  <p class="btn-context">btn-primary (#4a7c59 fill, white text) · btn-dark (#1e3d28 fill, white text) · btn-tint (#ddeee4 fill, #1e3d28 text) · btn-neutral (white fill, border) · btn-danger (#f5ddd6 fill)</p>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin:16px 0 8px;">On dark backgrounds (hero, journey bar)</p>
+  <div class="dark-bg">
+    <div class="button-row">
+      <span class="btn btn-primary">▶ Start travel mode</span>
+      <span class="btn btn-ghost-dark">⊞ View full map</span>
+      <span class="btn btn-ghost-dark">↗ Share</span>
+    </div>
+  </div>
+  <p class="btn-context">On deep forest / photo overlay: Bush Green primary + ghost (transparent, white border)</p>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin:16px 0 8px;">Small buttons (table, row actions)</p>
+  <div class="button-row">
+    <span class="btn btn-tint btn-sm">Save</span>
+    <span class="btn btn-neutral btn-sm">Edit</span>
+    <span class="btn btn-danger btn-sm">✕</span>
+    <span class="btn btn-neutral btn-sm">▲</span>
+    <span class="btn btn-neutral btn-sm">▼</span>
+  </div>
+
+  <div class="code-block" style="margin-top:16px;">
+    <pre><span class="code-comment">/* Primary button */</span>
+<span class="code-prop">.btn-primary</span> {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-bush-green);
+  color: #ffffff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}</pre>
+  </div>
+</div>
+
+<!-- 4. NAVIGATION -->
+<div class="section">
+  <p class="section-title">04 — Navigation</p>
+  <p class="section-intro">River Stone background with 1px border-bottom. Active link gets white background with border. Logo uses Deep Forest text with Bush Green dot. CTA button is Bush Green solid with white text.</p>
+
+  <div class="nav-demo">
+    <div class="nav-logo"><span class="nav-logo-dot"></span>Unbeaten Track</div>
+    <div class="nav-links">
+      <span class="nav-link active">Plan</span>
+      <span class="nav-link">My Journeys ▾</span>
+      <span class="nav-link">Discover</span>
+      <span class="nav-link">Map</span>
+      <span class="nav-link">Library</span>
+    </div>
+    <button class="nav-cta">+ New journey</button>
+  </div>
+
+  <div class="journey-bar-demo">
+    <div><div class="jb-title">Sydney to Melbourne the good way</div><div class="jb-meta">Route builder · Day 1 of 3</div></div>
+    <div class="jb-stats">
+      <div class="jb-stat"><div class="jb-val">740</div><div class="jb-lbl">km total</div></div>
+      <div class="jb-stat"><div class="jb-val">3</div><div class="jb-lbl">stops today</div></div>
+      <div class="jb-stat"><div class="jb-val">4.5</div><div class="jb-lbl">hrs drive</div></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <span class="btn btn-ghost-dark btn-sm">← Back</span>
+      <span class="btn btn-primary btn-sm">Save route</span>
+    </div>
+  </div>
+  <p class="btn-context">Nav bar: River Stone #f4f5f2 · Journey bar: Deep Forest #1e3d28 · Both 52–56px tall</p>
+</div>
+
+<!-- 5. BADGES & TAGS -->
+<div class="section">
+  <p class="section-title">05 — Badges, tags &amp; pills</p>
+  <p class="section-intro">Journey status badges use tinted backgrounds. POI category tags are always coloured per the category palette. Filter pills toggle between neutral and Bush Green active state.</p>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:8px;">Journey status badges</p>
+  <div class="badge-row">
+    <span class="badge" style="background:#ddeee4;color:#1e3d28;">In progress</span>
+    <span class="badge" style="background:#f5e8c0;color:#4a3000;">Draft</span>
+    <span class="badge" style="background:#d8e8f5;color:#1c3150;">Saved</span>
+  </div>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin:14px 0 8px;">POI category tags</p>
+  <div class="badge-row">
+    <span class="tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span>
+    <span class="tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span>
+    <span class="tag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span>
+    <span class="tag" style="background:#d8e8f5;color:#1c3150;">Good Finds</span>
+    <span class="tag" style="background:#e8e0f5;color:#3a2560;">Creative Towns</span>
+    <span class="tag" style="background:#e8ede5;color:#2a3a28;">Working Australia</span>
+  </div>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin:14px 0 8px;">Filter pills</p>
+  <div class="badge-row">
+    <span class="pill active"><span class="pill-dot" style="background:#4a7c59;"></span>Wild Places</span>
+    <span class="pill active"><span class="pill-dot" style="background:#c4552f;"></span>Deep Roots</span>
+    <span class="pill"><span class="pill-dot" style="background:#c49020;"></span>Local Legends</span>
+    <span class="pill"><span class="pill-dot" style="background:#2e5f8a;"></span>Good Finds</span>
+    <span class="pill">Pet friendly</span>
+  </div>
+</div>
+
+<!-- 6. CARDS -->
+<div class="section">
+  <p class="section-title">06 — Cards</p>
+  <p class="section-intro">White background, 1px #dde0da border, 8px border-radius. No shadows. Photos use a single 3:2 ratio master crop — CSS handles all display sizes with <code>background-size: cover</code>.</p>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:10px;">Discover / POI card</p>
+  <div class="card-row">
+    <div class="card">
+      <div class="card-photo" style="background:#c49020;">[ 3:2 photo ]</div>
+      <div class="card-body">
+        <span class="tag" style="background:#f5e8c0;color:#4a3000;">Local Legends</span>
+        <p class="card-name">Birthplace of Banjo Paterson</p>
+        <p class="card-desc">Australia's most beloved poet, born near Orange in 1864.</p>
+        <p class="card-dist">📍 4 km off route · Free</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-photo" style="background:#2e5f8a;">[ 3:2 photo ]</div>
+      <div class="card-body">
+        <span class="tag" style="background:#ddeee4;color:#1e3d28;">Wild Places</span>
+        <p class="card-name">Burrinjuck Waters State Park</p>
+        <p class="card-desc">Kayak hire, free camping, stunning reservoir.</p>
+        <p class="card-dist">📍 12 km off route · Free camping</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-photo" style="background:#c4552f;">[ 3:2 photo ]</div>
+      <div class="card-body">
+        <span class="tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span>
+        <p class="card-name">Gilbert's Grave</p>
+        <p class="card-desc">Bushranger Johnny Gilbert buried in the centre of Binalong.</p>
+        <p class="card-dist">📍 On route · Free</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;font-weight:600;color:#2a2e28;margin-bottom:10px;">Stop card (with thumbnail)</p>
+  <div class="stop-card">
+    <div class="stop-thumb"></div>
+    <div class="stop-main">
+      <div class="stop-name">Goulburn</div>
+      <div class="stop-detail">Overnight · Big Merino Hotel · 2 hrs from Sydney</div>
+      <div style="margin-top:6px;display:flex;gap:5px;">
+        <span class="tag" style="background:#f5ddd6;color:#5c1f0f;">Deep Roots</span>
+        <span class="tag" style="background:#f5e8c0;color:#4a3000;">Good Finds</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="narration" style="margin-top:16px;">
+    <div class="narration-lbl">▶ Drive-past narration · Day 2</div>
+    <div class="narration-text">"The mountain to your right is Mount Terrible — named not for its terrain but by a surveyor who had a very bad day there in 1853."</div>
+  </div>
+  <p class="btn-context">Narration block: #f2f9f5 bg · 3px solid #2d6a4f left border · italic body text</p>
+</div>
+
+<!-- 7. FORM ELEMENTS -->
+<div class="section">
+  <p class="section-title">07 — Form elements</p>
+  <p class="section-intro">Inputs use River Stone fill (#f4f5f2) with border. Focus state uses Bush Green border + light green box-shadow ring. Error state uses Red Earth border.</p>
+
+  <div class="input-row">
+    <div class="field">
+      <label class="field-label">Start location</label>
+      <input class="field-input" placeholder="e.g. Sydney" />
+    </div>
+    <div class="field">
+      <label class="field-label">Notes</label>
+      <input class="field-input" value="Big Merino, Goulburn Brewery" />
+    </div>
+    <div class="field">
+      <label class="field-label">Stop name (error state)</label>
+      <input class="field-input has-error" value="Goullburn" />
+    </div>
+  </div>
+
+  <div class="code-block">
+    <pre><span class="code-prop">.field-input</span> {
+  background: var(--color-river-stone);
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--color-near-black);
+  outline: none;
+}
+<span class="code-prop">.field-input:focus</span> {
+  border-color: var(--color-bush-green);
+  box-shadow: 0 0 0 3px rgba(74,124,89,0.12);
+}</pre>
+  </div>
+</div>
+
+<!-- 8. SPACING & RADIUS -->
+<div class="section">
+  <p class="section-title">08 — Spacing &amp; border radius</p>
+  <p class="section-intro">4px base unit. Use multiples: 4, 8, 12, 16, 20, 24, 28, 32, 48px. Padding inside cards and panels is 12–16px. Border radius is consistently 7–8px for cards and inputs, 6px for small buttons.</p>
+
+  <div class="spacing-row" style="margin-bottom:24px;">
+    <div class="spacing-item"><div class="spacing-block" style="height:4px;"></div><span class="spacing-label">4px</span></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:8px;"></div><span class="spacing-label">8px</span></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:12px;"></div><span class="spacing-label">12px</span></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:16px;"></div><span class="spacing-label">16px</span></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:24px;"></div><span class="spacing-label">24px</span></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:32px;"></div><span class="spacing-label">32px</span></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:48px;"></div><span class="spacing-label">48px</span></div>
+  </div>
+
+  <div class="radius-row">
+    <div class="radius-item"><div class="radius-box" style="border-radius:0px;"></div><span class="radius-label">0px<br>None</span></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:4px;"></div><span class="radius-label">4px<br>Tags / badges</span></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:6px;"></div><span class="radius-label">6px<br>Small buttons</span></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:7px;"></div><span class="radius-label">7px<br>Inputs / buttons</span></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:8px;"></div><span class="radius-label">8px<br>Cards / panels</span></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:10px;"></div><span class="radius-label">10px<br>Popups / flyouts</span></div>
+    <div class="radius-item"><div class="radius-box" style="border-radius:50%;width:80px;height:80px;"></div><span class="radius-label">50%<br>Avatars / dots</span></div>
+  </div>
+</div>
+
+<!-- 9. PHOTO SYSTEM -->
+<div class="section">
+  <p class="section-title">09 — Photo system</p>
+  <p class="section-intro">One master image per POI at 3:2 ratio. CSS handles all display sizes using <code>background-size: cover; background-position: center</code>. Multiple images are optional for high-profile places only.</p>
+
+  <table style="margin-bottom:20px;">
+    <thead>
+      <tr>
+        <th>Context</th>
+        <th>Display size</th>
+        <th>How</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Stop card thumbnail</td><td class="mono">96px wide × full height</td><td>CSS background-size: cover, centre crop</td><td>Master 3:2 image</td></tr>
+      <tr><td>Discover card header</td><td class="mono">Full width × 130–160px</td><td>CSS background-size: cover, max-height clamp</td><td>Master 3:2 image</td></tr>
+      <tr><td>Right rail card</td><td class="mono">Full width × 150px</td><td>CSS background-size: cover</td><td>Master 3:2 image</td></tr>
+      <tr><td>Hover card</td><td class="mono">300px wide × 3:2</td><td>padding-top: 66.67% ratio-box</td><td>Master 3:2 image</td></tr>
+      <tr><td>Map popup</td><td class="mono">240px wide × 3:2</td><td>padding-top: 66.67% ratio-box</td><td>Master 3:2 image</td></tr>
+      <tr><td>Search result thumb</td><td class="mono">60px × 40px</td><td>CSS background-size: cover</td><td>Master 3:2 image</td></tr>
+      <tr><td>Hero background</td><td class="mono">Full bleed × 250px</td><td>background-size: cover, gradient overlay</td><td>Separate hero image</td></tr>
+    </tbody>
+  </table>
+
+  <div class="code-block">
+    <pre><span class="code-comment">/* Hero overlay */</span>
+<span class="code-prop">.hero-overlay</span> {
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.78) 0%,
+    rgba(0,0,0,0.28) 50%,
+    transparent 100%
+  );
+}
+
+<span class="code-comment">/* 3:2 ratio box (for hover cards, popups) */</span>
+<span class="code-prop">.ratio-box</span> {
+  position: relative;
+  width: 100%;
+  padding-top: 66.67%;
+  overflow: hidden;
+}
+<span class="code-prop">.ratio-box .photo</span> {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}</pre>
+  </div>
+</div>
+
+<!-- 10. CSS CUSTOM PROPERTIES -->
+<div class="section">
+  <p class="section-title">10 — CSS custom properties (copy to Cursor)</p>
+  <p class="section-intro">Paste this block into your main <code>app.css</code> or <code>resources/css/app.css</code> in Laravel. Reference tokens throughout your Blade/Alpine components.</p>
+
+  <div class="code-block">
+    <pre><span class="code-comment">/* ============================================
+   UNBEATEN TRACK — DESIGN TOKENS
+   v1.0 — paste into resources/css/app.css
+   ============================================ */</span>
+
+:root {
+
+  <span class="code-comment">/* Brand greens */</span>
+  --color-deep-forest:    #1e3d28;
+  --color-bush-green:     #4a7c59;
+  --color-mid-green:      #2d6a4f;
+  --color-green-tint:     #ddeee4;
+  --color-green-wash:     #f2f9f5;
+  --color-green-border:   #b8ddc8;
+
+  <span class="code-comment">/* Neutrals */</span>
+  --color-river-stone:    #f4f5f2;
+  --color-white:          #ffffff;
+  --color-border:         #dde0da;
+  --color-near-black:     #2a2e28;
+  --color-charcoal:       #4a5248;
+  --color-mid-grey:       #7a8578;
+
+  <span class="code-comment">/* POI categories — mark, tag bg, tag text */</span>
+  --cat-deep-roots-mark:  #c4552f;
+  --cat-deep-roots-bg:    #f5ddd6;
+  --cat-deep-roots-text:  #5c1f0f;
+
+  --cat-local-legends-mark:  #c49020;
+  --cat-local-legends-bg:    #f5e8c0;
+  --cat-local-legends-text:  #4a3000;
+
+  --cat-wild-places-mark:  #4a7c59;
+  --cat-wild-places-bg:    #ddeee4;
+  --cat-wild-places-text:  #1e3d28;
+
+  --cat-good-finds-mark:   #2e5f8a;
+  --cat-good-finds-bg:     #d8e8f5;
+  --cat-good-finds-text:   #1c3150;
+
+  --cat-creative-mark:     #3a2560;
+  --cat-creative-bg:       #e8e0f5;
+  --cat-creative-text:     #3a2560;
+
+  --cat-working-mark:      #2a3a28;
+  --cat-working-bg:        #e8ede5;
+  --cat-working-text:      #2a3a28;
+
+  <span class="code-comment">/* Journey status badges */</span>
+  --badge-in-progress-bg:   #ddeee4;
+  --badge-in-progress-text: #1e3d28;
+  --badge-draft-bg:         #f5e8c0;
+  --badge-draft-text:       #4a3000;
+  --badge-saved-bg:         #d8e8f5;
+  --badge-saved-text:       #1c3150;
+
+  <span class="code-comment">/* Typography */</span>
+  --font-family:    'Inter', system-ui, sans-serif;
+  --font-size-base: 15px;
+  --line-height:    1.6;
+
+  <span class="code-comment">/* Border radius */</span>
+  --radius-tag:     4px;
+  --radius-sm:      6px;
+  --radius-md:      7px;
+  --radius-lg:      8px;
+  --radius-xl:      10px;
+
+  <span class="code-comment">/* Layout */</span>
+  --nav-height:         56px;
+  --sidebar-width:      300px;
+  --right-rail-width:   300px;
+  --itinerary-width:    380px;
+}</pre>
+  </div>
+</div>
+
+<!-- 11. LAYOUT BREAKPOINTS -->
+<div class="section">
+  <p class="section-title">11 — Layout &amp; breakpoints</p>
+  <p class="section-intro">Web-first, laptop primary (1280px+). Responsive breakpoints planned for later.</p>
+
+  <table>
+    <thead>
+      <tr><th>Breakpoint</th><th>Width</th><th>Layout behaviour</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Desktop (primary)</td><td class="mono">1280px+</td><td>Full two-column layouts. Sidebar + main. Three-panel where needed.</td></tr>
+      <tr><td>Laptop (min target)</td><td class="mono">1024px</td><td>Sidebar collapses to icon rail or off-canvas drawer.</td></tr>
+      <tr><td>Tablet</td><td class="mono">768px</td><td>Sidebar off-canvas. Hero stacks above content. Single column.</td></tr>
+      <tr><td>Mobile</td><td class="mono">&lt;768px</td><td>Travel Mode — separate simplified layout. Minimal UI for driving.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 12. CURSOR NOTES -->
+<div class="section">
+  <p class="section-title">12 — Notes for Cursor / developer handoff</p>
+
+  <div class="cursor-note"><strong>Buttons:</strong> Use <code>display: inline-flex</code> not <code>&lt;button&gt;</code> in Blade templates. Browser and admin template default button styles override background colours on standard button elements.</div>
+  <div class="cursor-note"><strong>Photos:</strong> One 3:2 master image per POI stored in the database. Never request multiple crops. All display sizes handled by <code>background-size: cover; background-position: center</code> via CSS.</div>
+  <div class="cursor-note"><strong>Day selector:</strong> Show as pill tabs for 1–4 days. Switch to a <code>&lt;select&gt;</code> dropdown for 5+ days to prevent tab overflow. Implement conditionally in Alpine.js: <code>x-show="journey.days.length &lt;= 4"</code>.</div>
+  <div class="cursor-note"><strong>Map:</strong> MapLibre GL JS replaces all SVG map placeholders in the real build. The SVG mockups show intended marker styles, popup design and legend layout only.</div>
+  <div class="cursor-note"><strong>Font loading:</strong> Load Inter via Google Fonts in the HTML <code>&lt;head&gt;</code>. Use <code>display=swap</code> to prevent FOUT. The Limitless admin template may already include Inter — check before adding a duplicate import.</div>
+  <div class="cursor-note"><strong>Narration block:</strong> The left-bordered quote block uses <code>border-left: 3px solid var(--color-mid-green)</code> with <code>border-radius: 0</code> on the left side only. Do not apply border-radius to single-sided borders.</div>
+  <div class="cursor-note"><strong>Colour palette:</strong> The coral/orange from the original logo has been retired. Do not introduce it. The full palette is defined in the CSS custom properties block above — use only those tokens.</div>
+</div>
+
+</div>
+</body>
+</html>
