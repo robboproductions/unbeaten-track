@@ -14,7 +14,7 @@ class TownAboutAiDraftController extends Controller
     {
         if (! $ai->isConfigured()) {
             return response()->json([
-                'message' => 'Add OPENAI_API_KEY and/or ANTHROPIC_API_KEY to .env to enable AI drafting.',
+                'message' => 'Add ANTHROPIC_API_KEY (Claude) or OPENAI_API_KEY to .env to enable drafting.',
             ], 503);
         }
 
@@ -24,7 +24,7 @@ class TownAboutAiDraftController extends Controller
             report($e);
 
             return response()->json([
-                'message' => 'The AI service returned an error. Check logs or try again in a moment.',
+                'message' => $e->getMessage(),
             ], 502);
         }
 

@@ -29,6 +29,6 @@ class TownAboutAiDraftTest extends TestCase
         $this->actingAs($user)
             ->postJson(route('admin.towns.ai-about-draft', $town))
             ->assertStatus(503)
-            ->assertJsonPath('message', 'Add OPENAI_API_KEY and/or ANTHROPIC_API_KEY to .env to enable AI drafting.');
+            ->assertJsonPath('message', 'Add ANTHROPIC_API_KEY (Claude) or OPENAI_API_KEY to .env to enable drafting.');
     }
 }

@@ -139,7 +139,7 @@
                             @if (! $townAboutAi['enabled'] && ($townAboutAi['hint'] ?? null))
                                 title="{{ e($townAboutAi['hint']) }}"
                             @endif
-                        >Draft with AI</button>
+                        >Draft with Claude</button>
                     </div>
                 </div>
                 @if (! $townAboutAi['enabled'] && ($townAboutAi['hint'] ?? null))
@@ -153,7 +153,7 @@
                     class="town-form-control town-form-control--textarea town-about-html-textarea"
                 >{{ old('about_html', $town?->about_html) }}</textarea>
                 @error('about_html')<p class="town-form-error">{{ $message }}</p>@enderror
-                <p class="town-form-hint">Rich text for public-facing copy. AI drafts are suggestions—always review for accuracy.</p>
+                <p class="town-form-hint">Rich text for public-facing copy. Claude drafts are suggestions—always review for accuracy.</p>
             </div>
 
             <div class="town-form-field">
@@ -225,8 +225,8 @@
     @once
         <script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js" referrerpolicy="origin"></script>
     @endonce
-    <script src="{{ asset('js/admin-town-about-editor.js') }}?v=1"></script>
     <script>
         window.__UT_TOWN_ABOUT_EDITOR = @json(['ai' => $townAboutAi]);
     </script>
+    <script src="{{ asset('js/admin-town-about-editor.js') }}?v=2"></script>
 @endpush

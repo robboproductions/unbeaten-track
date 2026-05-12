@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Town;
-use App\Services\TownAboutHtmlSanitizer;
 use App\Services\TownAboutAiDraftService;
+use App\Services\TownAboutHtmlSanitizer;
 use App\Services\TownPhotoService;
 use App\Support\AustraliaGeography;
 use Illuminate\Database\Eloquent\Builder;
@@ -153,7 +153,7 @@ class TownController extends Controller
             return [
                 'enabled' => false,
                 'url' => null,
-                'hint' => 'Save the town first, then you can draft “About” copy with AI from the edit screen.',
+                'hint' => 'Save the town first, then use “Draft with Claude” on the edit screen.',
             ];
         }
 
@@ -161,7 +161,7 @@ class TownController extends Controller
             return [
                 'enabled' => false,
                 'url' => null,
-                'hint' => 'Set OPENAI_API_KEY and/or ANTHROPIC_API_KEY in .env (keys stay on the server).',
+                'hint' => 'Set ANTHROPIC_API_KEY in .env for Claude, then run php artisan config:clear (keys stay on the server only).',
             ];
         }
 
@@ -177,7 +177,7 @@ class TownController extends Controller
         $query = Town::query()->withCount('photos')->orderBy('name');
 
         if ($request->filled('q')) {
-            $query->where('name', 'like', '%' . $request->string('q') . '%');
+            $query->where('name', 'like', '%'.$request->string('q').'%');
         }
 
         if ($request->filled('state')) {
