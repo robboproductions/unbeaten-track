@@ -5,17 +5,17 @@ return [
     'enabled' => env('POI_NARRATION_ENABLED', true),
 
     /*
-    | Admin POI narration: Baxter / Zoe buttons (Generate audio with …).
-    | Baxter uses ELEVENLABS_DEFAULT_VOICE_ID; Zoe uses ELEVENLABS_ZOE_VOICE_ID.
+    | Admin narration: Terry / Sarah buttons (Generate audio with …).
+    | Terry uses ELEVENLABS_DEFAULT_VOICE_ID; Sarah uses ELEVENLABS_ZOE_VOICE_ID.
     */
     'voices' => [
-        'baxter' => [
+        'terry' => [
             'id' => env('ELEVENLABS_DEFAULT_VOICE_ID', 'jSuBIjxMKhqIfb0wCK1F'),
-            'label' => 'Baxter',
+            'label' => 'Terry',
         ],
-        'zoe' => [
+        'sarah' => [
             'id' => env('ELEVENLABS_ZOE_VOICE_ID', 'IwFADcBfc7Yo8KGhxTR5'),
-            'label' => 'Zoe',
+            'label' => 'Sarah',
         ],
     ],
 

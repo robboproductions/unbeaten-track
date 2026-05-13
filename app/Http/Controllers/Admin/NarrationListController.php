@@ -34,6 +34,7 @@ class NarrationListController extends Controller
                 'name' => $poi->name,
                 'subtitle' => $poi->town?->name,
                 'voice_label' => NarrationVoiceCatalog::displayLabel($poi->narration_voice_label, $poi->narration_voice_id),
+                'voice_portrait_url' => NarrationVoiceCatalog::narratorPortraitUrl($poi->narration_voice_id, $poi->narration_voice_label),
                 'generated_at' => $poi->narration_generated_at,
                 'audio_url' => $poi->narration_audio_url,
                 'edit_url' => route('admin.pois.edit', $poi),
@@ -48,6 +49,7 @@ class NarrationListController extends Controller
                 'name' => $town->name,
                 'subtitle' => null,
                 'voice_label' => NarrationVoiceCatalog::displayLabel($town->narration_voice_label, $town->narration_voice_id),
+                'voice_portrait_url' => NarrationVoiceCatalog::narratorPortraitUrl($town->narration_voice_id, $town->narration_voice_label),
                 'generated_at' => $town->narration_generated_at,
                 'audio_url' => $town->narration_audio_url,
                 'edit_url' => route('admin.towns.edit', $town),
@@ -78,6 +80,7 @@ class NarrationListController extends Controller
 
         return view('admin.narrations.index', [
             'narrations' => $narrations,
+            'narrator_showcase' => NarrationVoiceCatalog::narratorsForShowcase(),
         ]);
     }
 }

@@ -217,7 +217,7 @@
                     <div style="margin-top:12px;padding:12px 14px;border-radius:var(--radius-md);background:var(--color-river-stone);border:1px solid var(--color-border);">
                         <div style="font-size:12px;font-weight:600;color:var(--color-charcoal);margin-bottom:8px;">Audio narration</div>
                         <p class="town-form-hint" style="margin-bottom:10px;">
-                            Choose <strong>Baxter</strong> or <strong>Zoe</strong> when you generate; the town stores which voice was used for the current file.
+                            Choose <strong>Terry</strong> or <strong>Sarah</strong> when you generate; the town stores which voice was used for the current file.
                         </p>
 
                         @if (! $townNarration['enabled'])
@@ -256,16 +256,16 @@
                                 <button
                                     type="submit"
                                     class="btn btn-primary btn-sm"
-                                    form="ut-town-narration-generate-baxter-{{ $town->id }}"
-                                >{{ $town->has_narration ? 'Regenerate audio with Baxter' : 'Generate audio with Baxter' }}</button>
+                                    form="ut-town-narration-generate-terry-{{ $town->id }}"
+                                >{{ $town->has_narration ? 'Regenerate audio with Terry' : 'Generate audio with Terry' }}</button>
                                 <button
                                     type="submit"
                                     class="btn btn-primary btn-sm"
-                                    form="ut-town-narration-generate-zoe-{{ $town->id }}"
-                                >{{ $town->has_narration ? 'Regenerate audio with Zoe' : 'Generate audio with Zoe' }}</button>
+                                    form="ut-town-narration-generate-sarah-{{ $town->id }}"
+                                >{{ $town->has_narration ? 'Regenerate audio with Sarah' : 'Generate audio with Sarah' }}</button>
                             @elseif ($townNarration['enabled'] && $townNarration['configured'])
-                                <button type="button" class="btn btn-primary btn-sm" disabled title="Add a narration script first">Generate audio with Baxter</button>
-                                <button type="button" class="btn btn-primary btn-sm" disabled title="Add a narration script first">Generate audio with Zoe</button>
+                                <button type="button" class="btn btn-primary btn-sm" disabled title="Add a narration script first">Generate audio with Terry</button>
+                                <button type="button" class="btn btn-primary btn-sm" disabled title="Add a narration script first">Generate audio with Sarah</button>
                             @endif
 
                             @if ($town->has_narration && $townNarration['destroyUrl'])

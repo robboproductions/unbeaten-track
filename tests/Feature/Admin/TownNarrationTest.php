@@ -27,8 +27,8 @@ class TownNarrationTest extends TestCase
     {
         return [
             'poi_narration.voices' => [
-                'baxter' => ['id' => 'voice-1', 'label' => 'Baxter'],
-                'zoe' => ['id' => 'voice-2', 'label' => 'Zoe'],
+                'terry' => ['id' => 'voice-1', 'label' => 'Terry'],
+                'sarah' => ['id' => 'voice-2', 'label' => 'Sarah'],
             ],
         ];
     }
@@ -93,7 +93,7 @@ class TownNarrationTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($town->narration_audio_path));
         $this->assertNotNull($town->narration_script_hash);
         $this->assertSame('voice-1', $town->narration_voice_id);
-        $this->assertSame('Baxter', $town->narration_voice_label);
+        $this->assertSame('Terry', $town->narration_voice_label);
         $this->assertSame($user->id, $town->narration_generated_by);
     }
 

@@ -38,16 +38,16 @@
 
                 {{-- Must stay outside the main <form>: nested forms are invalid HTML and break submit buttons in some browsers. --}}
                 @php
-                    $narrationVoiceBaxterId = (string) data_get(config('poi_narration.voices', []), 'baxter.id', '');
-                    $narrationVoiceZoeId = (string) data_get(config('poi_narration.voices', []), 'zoe.id', '');
+                    $narrationVoiceTerryId = (string) data_get(config('poi_narration.voices', []), 'terry.id', '');
+                    $narrationVoiceSarahId = (string) data_get(config('poi_narration.voices', []), 'sarah.id', '');
                 @endphp
-                <form id="ut-poi-narration-generate-baxter-{{ $poi->id }}" method="post" action="{{ route('admin.pois.narration.generate', $poi) }}" hidden aria-hidden="true">
+                <form id="ut-poi-narration-generate-terry-{{ $poi->id }}" method="post" action="{{ route('admin.pois.narration.generate', $poi) }}" hidden aria-hidden="true">
                     @csrf
-                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceBaxterId }}">
+                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceTerryId }}">
                 </form>
-                <form id="ut-poi-narration-generate-zoe-{{ $poi->id }}" method="post" action="{{ route('admin.pois.narration.generate', $poi) }}" hidden aria-hidden="true">
+                <form id="ut-poi-narration-generate-sarah-{{ $poi->id }}" method="post" action="{{ route('admin.pois.narration.generate', $poi) }}" hidden aria-hidden="true">
                     @csrf
-                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceZoeId }}">
+                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceSarahId }}">
                 </form>
                 <form id="ut-poi-narration-destroy-{{ $poi->id }}" method="post" action="{{ route('admin.pois.narration.destroy', $poi) }}" hidden aria-hidden="true">
                     @csrf

@@ -32,7 +32,8 @@ class NarrationListTest extends TestCase
     {
         config([
             'poi_narration.voices' => [
-                'baxter' => ['id' => 'voice-1', 'label' => 'Baxter'],
+                'terry' => ['id' => 'voice-1', 'label' => 'Terry'],
+                'sarah' => ['id' => 'voice-2', 'label' => 'Sarah'],
             ],
         ]);
 
@@ -46,7 +47,7 @@ class NarrationListTest extends TestCase
             'narration_audio_path' => 'town-narrations/1-old.mp3',
             'narration_generated_at' => now()->subDay(),
             'narration_voice_id' => 'voice-1',
-            'narration_voice_label' => 'Baxter',
+            'narration_voice_label' => 'Terry',
         ])->save();
 
         $poiTown = Town::create([
@@ -77,13 +78,25 @@ class NarrationListTest extends TestCase
             ->assertOk();
 
         $content = $response->getContent();
+        $sarahIntroPos = strpos($content, 'sarah_intro.mp3');
+        $terryIntroPos = strpos($content, 'terry_intro.mp3');
+        $this->assertNotFalse($sarahIntroPos);
+        $this->assertNotFalse($terryIntroPos);
+        $this->assertLessThan($terryIntroPos, $sarahIntroPos, 'Sarah narrator block should appear before Terry in the showcase panel');
+
         $poiPos = strpos($content, 'Gamma POI');
         $townPos = strpos($content, 'Alpha Town');
         $this->assertNotFalse($poiPos);
         $this->assertNotFalse($townPos);
         $this->assertLessThan($townPos, $poiPos, 'Newer POI row should appear before older town row');
 
-        $response->assertSee('Baxter', false)
+        $response->assertSee('Narrators', false)
+            ->assertSee('Terry', false)
+            ->assertSee('Sarah', false)
+            ->assertSee('images/narrators/terry.png', false)
+            ->assertSee('images/narrators/sarah.png', false)
+            ->assertSee('audio/narrator-intros/terry_intro.mp3', false)
+            ->assertSee('audio/narrator-intros/sarah_intro.mp3', false)
             ->assertSee('Bravo Shire', false)
             ->assertSee(route('admin.pois.edit', $poi), false)
             ->assertSee(route('admin.towns.edit', $town), false);

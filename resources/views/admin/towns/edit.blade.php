@@ -38,16 +38,16 @@
                 </form>
 
                 @php
-                    $narrationVoiceBaxterId = (string) data_get(config('poi_narration.voices', []), 'baxter.id', '');
-                    $narrationVoiceZoeId = (string) data_get(config('poi_narration.voices', []), 'zoe.id', '');
+                    $narrationVoiceTerryId = (string) data_get(config('poi_narration.voices', []), 'terry.id', '');
+                    $narrationVoiceSarahId = (string) data_get(config('poi_narration.voices', []), 'sarah.id', '');
                 @endphp
-                <form id="ut-town-narration-generate-baxter-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.generate', $town) }}" hidden aria-hidden="true">
+                <form id="ut-town-narration-generate-terry-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.generate', $town) }}" hidden aria-hidden="true">
                     @csrf
-                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceBaxterId }}">
+                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceTerryId }}">
                 </form>
-                <form id="ut-town-narration-generate-zoe-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.generate', $town) }}" hidden aria-hidden="true">
+                <form id="ut-town-narration-generate-sarah-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.generate', $town) }}" hidden aria-hidden="true">
                     @csrf
-                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceZoeId }}">
+                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceSarahId }}">
                 </form>
                 <form id="ut-town-narration-destroy-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.destroy', $town) }}" hidden aria-hidden="true">
                     @csrf
