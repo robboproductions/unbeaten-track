@@ -9,7 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pois', function (Blueprint $table) {
-            $table->text('narration_script')->nullable()->after('spreadsheet_notes');
+            // Must not use after('spreadsheet_notes'): that column is added in a later migration (2026_05_16_100000).
+            $table->text('narration_script')->nullable()->after('short_description');
             $table->string('narration_voice_id', 64)->nullable()->after('narration_script');
             $table->string('narration_model_id', 64)->nullable()->after('narration_voice_id');
             $table->string('narration_audio_path', 512)->nullable()->after('narration_model_id');
