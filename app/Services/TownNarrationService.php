@@ -6,6 +6,7 @@ use App\Models\Town;
 use App\Models\User;
 use App\Services\Narration\Contracts\NarrationProvider;
 use App\Services\Narration\NarrationGenerationException;
+use App\Support\NarrationVoiceCatalog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -71,8 +72,11 @@ class TownNarrationService
             DB::transaction(function () use ($town, $filename, $voiceId, $modelId, $hash, $result, $generatedBy, $disk, $previousPath): void {
                 $disk->put($filename, $result->audio);
 
+                $voiceLabel = NarrationVoiceCatalog::labelForVoiceId($voiceId);
+
                 $town->forceFill([
                     'narration_voice_id' => $voiceId,
+                    'narration_voice_label' => $voiceLabel,
                     'narration_model_id' => $modelId,
                     'narration_audio_path' => $filename,
                     'narration_audio_duration_seconds' => $result->durationSeconds,
@@ -108,6 +112,7 @@ class TownNarrationService
 
         $town->forceFill([
             'narration_voice_id' => null,
+            'narration_voice_label' => null,
             'narration_model_id' => null,
             'narration_audio_path' => null,
             'narration_audio_duration_seconds' => null,

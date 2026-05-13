@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MapController;
+use App\Http\Controllers\Admin\NarrationListController;
 use App\Http\Controllers\Admin\PoiAboutAiDraftController;
 use App\Http\Controllers\Admin\PoiController;
 use App\Http\Controllers\Admin\PoiNarrationController;
@@ -34,6 +35,8 @@ Route::prefix('admin')->middleware(['auth', 'admin.panel'])->name('admin.')->gro
     })->name('home');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('narrations', [NarrationListController::class, 'index'])->name('narrations.index');
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');

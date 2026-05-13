@@ -93,6 +93,7 @@ class TownNarrationTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($town->narration_audio_path));
         $this->assertNotNull($town->narration_script_hash);
         $this->assertSame('voice-1', $town->narration_voice_id);
+        $this->assertSame('Baxter', $town->narration_voice_label);
         $this->assertSame($user->id, $town->narration_generated_by);
     }
 
@@ -126,6 +127,7 @@ class TownNarrationTest extends TestCase
 
         $town->refresh();
         $this->assertNull($town->narration_audio_path);
+        $this->assertNull($town->narration_voice_label);
         $this->assertFalse(Storage::disk('public')->exists((string) $path));
         $this->assertNotNull($town->narration_script);
     }

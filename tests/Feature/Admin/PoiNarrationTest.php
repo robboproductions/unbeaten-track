@@ -104,6 +104,7 @@ class PoiNarrationTest extends TestCase
         $this->assertTrue(Storage::disk('public')->exists($poi->narration_audio_path));
         $this->assertNotNull($poi->narration_script_hash);
         $this->assertSame('voice-1', $poi->narration_voice_id);
+        $this->assertSame('Baxter', $poi->narration_voice_label);
         $this->assertSame($user->id, $poi->narration_generated_by);
     }
 
@@ -298,6 +299,7 @@ class PoiNarrationTest extends TestCase
 
         $poi->refresh();
         $this->assertNull($poi->narration_audio_path);
+        $this->assertNull($poi->narration_voice_label);
         $this->assertFalse(Storage::disk('public')->exists((string) $path));
         $this->assertNotNull($poi->narration_script);
     }

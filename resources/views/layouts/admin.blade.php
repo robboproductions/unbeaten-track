@@ -56,7 +56,9 @@
                     <a class="admin-nav-item {{ request()->routeIs('admin.pois.*') ? 'active' : '' }}" href="{{ route('admin.pois.index') }}" @click="adminMenuOpen = false">
                         POIs
                     </a>
-                    <span class="admin-nav-item disabled">Narration</span>
+                    <a class="admin-nav-item {{ request()->routeIs('admin.narrations.*') ? 'active' : '' }}" href="{{ route('admin.narrations.index') }}" @click="adminMenuOpen = false">
+                        Narrations
+                    </a>
                     <span class="admin-nav-item disabled">Media library</span>
                 </div>
 
