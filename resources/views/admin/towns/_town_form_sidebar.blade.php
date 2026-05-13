@@ -2,11 +2,12 @@
 @php
     /** @var \App\Models\Town|null $town */
     /** @var string $mainFormId */
-    /** @var array{enabled: bool, styleUrl: string|null, proxyUrl: string|null, initialLat: float|null, initialLng: float|null, defaultZoom: int, revert?: array<string, string>} $adminMap */
+    /** @var array{enabled: bool, styleUrl: string|null, proxyUrl: string|null, geocodeUrl: string|null, initialLat: float|null, initialLng: float|null, defaultZoom: int, revert?: array<string, string>} $adminMap */
     $adminMap = $adminMap ?? [
         'enabled' => false,
         'styleUrl' => null,
         'proxyUrl' => null,
+        'geocodeUrl' => null,
         'initialLat' => null,
         'initialLng' => null,
         'defaultZoom' => 4,
@@ -42,5 +43,5 @@
 
     @includeWhen($adminMap['enabled'], 'admin.towns._town_map_assets', ['adminMap' => $adminMap])
 
-    <script defer src="{{ asset('js/admin-town-map-init.js') }}?v=4"></script>
+    <script defer src="{{ asset('js/admin-town-map-init.js') }}?v=7"></script>
 </aside>

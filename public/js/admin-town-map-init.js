@@ -1,5 +1,5 @@
 /**
- * Admin town create/edit — MapLibre preview (optional) + coordinate revert.
+ * Admin town create/edit — MapLibre preview, draggable pin, geocode (MapTiler via Laravel).
  * Expects window.__UT_ADMIN_TOWN_MAP from the town form sidebar.
  */
 (function () {
@@ -7,6 +7,11 @@
 
     function cfg() {
         return window.__UT_ADMIN_TOWN_MAP || {};
+    }
+
+    function csrfToken() {
+        var m = document.querySelector('meta[name="csrf-token"]');
+        return m ? m.getAttribute('content') || '' : '';
     }
 
     function proxyTransform(url) {
@@ -35,6 +40,21 @@
         return Number.isFinite(n) ? n : null;
     }
 
+    function formatCoord(n) {
+        return Number(n).toFixed(7);
+    }
+
+    function writeTownInputsFromLngLat(lng, lat) {
+        var latEl = document.getElementById('town_latitude');
+        var lngEl = document.getElementById('town_longitude');
+        if (latEl) {
+            latEl.value = formatCoord(lat);
+        }
+        if (lngEl) {
+            lngEl.value = formatCoord(lng);
+        }
+    }
+
     function waitForMaplibre(cb) {
         if (typeof maplibregl !== 'undefined') {
             cb();
@@ -59,9 +79,6 @@
         return String(v);
     }
 
-    /**
-     * Reset lat/lng/population inputs to the values from when this page was built (same source as the Blade `value=` attributes).
-     */
     function applyRevertFieldValues() {
         var r = cfg().revert || {};
         var latEl = document.getElementById('town_latitude');
@@ -78,7 +95,11 @@
         }
         var statusEl = document.getElementById('town_publication_status');
         if (statusEl && Object.prototype.hasOwnProperty.call(r, 'status')) {
-            statusEl.value = r.status === 'published' ? 'published' : 'draft';
+            var st = r.status || 'draft';
+            if (st !== 'published' && st !== 'draft' && st !== 'pending') {
+                st = 'draft';
+            }
+            statusEl.value = st;
         }
         var verEl = document.getElementById('town_verification_status');
         if (verEl && Object.prototype.hasOwnProperty.call(r, 'verification_status')) {
@@ -102,6 +123,94 @@
         });
     }
 
+    function buildTownGeocodeQuery() {
+        var nameEl = document.getElementById('town_name');
+        var stEl = document.getElementById('town_state');
+        var regEl = document.getElementById('town_region');
+        var name = nameEl ? String(nameEl.value).trim() : '';
+        if (!name) {
+            return '';
+        }
+        var parts = [name];
+        var reg = regEl ? String(regEl.value || '').trim() : '';
+        if (reg) {
+            parts.push(reg);
+        }
+        var st = stEl ? String(stEl.value || '').trim() : '';
+        if (st) {
+            parts.push(st);
+        }
+        parts.push('Australia');
+        return parts.join(', ');
+    }
+
+    function geocodeErrorMessage(data, status) {
+        if (data && typeof data.message === 'string' && data.message) {
+            return data.message;
+        }
+        if (data && data.errors && data.errors.q && data.errors.q[0]) {
+            return String(data.errors.q[0]);
+        }
+        if (status === 404) {
+            return 'No matching places found.';
+        }
+        return 'Lookup failed.';
+    }
+
+    function bindGeocode() {
+        var btn = document.getElementById('town_map_geocode_btn');
+        if (!btn) {
+            return;
+        }
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            var c = cfg();
+            if (!c.geocodeUrl) {
+                window.alert('Geocoding is not configured.');
+                return;
+            }
+            var q = buildTownGeocodeQuery();
+            if (!q) {
+                window.alert('Enter a town name first.');
+                return;
+            }
+            var prevDisabled = btn.disabled;
+            btn.disabled = true;
+            fetch(c.geocodeUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': csrfToken(),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({ q: q }),
+            })
+                .then(function (res) {
+                    return res.json().then(function (data) {
+                        return { res: res, data: data };
+                    });
+                })
+                .then(function (o) {
+                    if (o.res.ok && o.data && o.data.ok === true) {
+                        writeTownInputsFromLngLat(o.data.longitude, o.data.latitude);
+                        var inst = window.__UT_ADMIN_TOWN_MAP_INSTANCE;
+                        if (inst && typeof inst.showFromInputs === 'function') {
+                            inst.showFromInputs();
+                        }
+                    } else {
+                        window.alert(geocodeErrorMessage(o.data, o.res.status));
+                    }
+                })
+                .catch(function () {
+                    window.alert('Lookup failed (network error).');
+                })
+                .finally(function () {
+                    btn.disabled = prevDisabled;
+                });
+        });
+    }
+
     function initMap() {
         var c = cfg();
         if (!c.enabled || !c.styleUrl || !c.proxyUrl) {
@@ -116,8 +225,7 @@
         var lat0 = parseCoord(c.initialLat);
         var lng0 = parseCoord(c.initialLng);
         var zoom = typeof c.defaultZoom === 'number' ? c.defaultZoom : 4;
-        var center =
-            lat0 !== null && lng0 !== null ? [lng0, lat0] : [133.7751, -25.2744];
+        var center = lat0 !== null && lng0 !== null ? [lng0, lat0] : [133.7751, -25.2744];
 
         var map = new maplibregl.Map({
             container: el,
@@ -132,10 +240,20 @@
 
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
-        var marker = new maplibregl.Marker({ color: '#2d5016' });
+        var marker = new maplibregl.Marker({ color: '#2d5016', draggable: true });
         if (lat0 !== null && lng0 !== null) {
             marker.setLngLat([lng0, lat0]).addTo(map);
         }
+
+        marker.on('dragend', function () {
+            var ll = marker.getLngLat();
+            writeTownInputsFromLngLat(ll.lng, ll.lat);
+        });
+
+        map.on('click', function (ev) {
+            marker.setLngLat(ev.lngLat).addTo(map);
+            writeTownInputsFromLngLat(ev.lngLat.lng, ev.lngLat.lat);
+        });
 
         function showFromInputs() {
             var latEl = document.getElementById('town_latitude');
@@ -153,7 +271,7 @@
             marker.setLngLat([lng, lat]).addTo(map);
             map.flyTo({
                 center: [lng, lat],
-                zoom: Math.max(map.getZoom(), 12),
+                zoom: Math.max(map.getZoom(), 13),
                 essential: true,
             });
         }
@@ -207,6 +325,7 @@
 
     function boot() {
         bindRevert();
+        bindGeocode();
         bootMap();
     }
 

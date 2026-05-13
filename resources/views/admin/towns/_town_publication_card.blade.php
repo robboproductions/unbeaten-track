@@ -17,6 +17,7 @@
             class="town-form-control town-form-control--select"
         >
             <option value="draft" @selected(old('status', $town?->status ?? 'draft') === 'draft')>Draft</option>
+            <option value="pending" @selected(old('status', $town?->status ?? 'draft') === 'pending')>Pending</option>
             <option value="published" @selected(old('status', $town?->status ?? 'draft') === 'published')>Published</option>
         </select>
         @error('status')<p class="town-form-error">{{ $message }}</p>@enderror

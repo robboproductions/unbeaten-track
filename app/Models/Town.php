@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Town extends Model
 {
@@ -30,6 +31,7 @@ class Town extends Model
         'likely_poi_categories',
         'suggested_corridor',
         'spreadsheet_notes',
+        'narration_script',
     ];
 
     protected function casts(): array
@@ -37,6 +39,7 @@ class Town extends Model
         return [
             'published_at' => 'datetime',
             'verified_at' => 'datetime',
+            'narration_generated_at' => 'datetime',
             'population_approx' => 'integer',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
@@ -88,6 +91,13 @@ class Town extends Model
             foreach ($town->photos as $photo) {
                 $photo->delete();
             }
+
+            if (filled($town->narration_audio_path)) {
+                $disk = Storage::disk((string) config('poi_narration.town_storage.disk', 'public'));
+                if ($disk->exists($town->narration_audio_path)) {
+                    $disk->delete($town->narration_audio_path);
+                }
+            }
         });
     }
 
@@ -114,5 +124,32 @@ class Town extends Model
     public function verifiedByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function narrationGeneratedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'narration_generated_by');
+    }
+
+    public function getNarrationAudioUrlAttribute(): ?string
+    {
+        if (! filled($this->narration_audio_path)) {
+            return null;
+        }
+
+        $relative = ltrim(str_replace('\\', '/', (string) $this->narration_audio_path), '/');
+
+        $url = '/storage/'.$relative;
+
+        if ($this->narration_generated_at !== null) {
+            $url .= '?v='.$this->narration_generated_at->getTimestamp();
+        }
+
+        return $url;
+    }
+
+    public function getHasNarrationAttribute(): bool
+    {
+        return filled($this->narration_audio_path);
     }
 }

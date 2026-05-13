@@ -43,6 +43,7 @@
                         <option value="">All status</option>
                         <option value="published" @selected(request('status') === 'published')>Published</option>
                         <option value="draft" @selected(request('status') === 'draft')>Draft</option>
+                        <option value="pending" @selected(request('status') === 'pending')>Pending</option>
                     </select>
                     <input class="btn btn-neutral btn-sm" type="submit" value="Filter" />
                     <a class="btn btn-neutral btn-sm" href="{{ route('admin.towns.map') }}">Reset</a>

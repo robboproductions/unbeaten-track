@@ -32,7 +32,26 @@
                         'selectedRegion' => (string) old('region', $town->region ?? ''),
                         'adminMap' => $adminMap,
                         'townAboutAi' => $townAboutAi,
+                        'townNarrationAi' => $townNarrationAi,
+                        'townNarration' => $townNarration,
                     ])
+                </form>
+
+                @php
+                    $narrationVoiceBaxterId = (string) data_get(config('poi_narration.voices', []), 'baxter.id', '');
+                    $narrationVoiceZoeId = (string) data_get(config('poi_narration.voices', []), 'zoe.id', '');
+                @endphp
+                <form id="ut-town-narration-generate-baxter-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.generate', $town) }}" hidden aria-hidden="true">
+                    @csrf
+                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceBaxterId }}">
+                </form>
+                <form id="ut-town-narration-generate-zoe-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.generate', $town) }}" hidden aria-hidden="true">
+                    @csrf
+                    <input type="hidden" name="narration_voice_id" value="{{ $narrationVoiceZoeId }}">
+                </form>
+                <form id="ut-town-narration-destroy-{{ $town->id }}" method="post" action="{{ route('admin.towns.narration.destroy', $town) }}" hidden aria-hidden="true">
+                    @csrf
+                    @method('delete')
                 </form>
 
                 @include('admin.towns._town_form_sidebar', ['town' => $town, 'mainFormId' => $townFormId, 'adminMap' => $adminMap])

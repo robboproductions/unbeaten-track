@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Town;
 use App\Services\TownAboutAiDraftService;
 use App\Services\TownAboutHtmlSanitizer;
+use App\Services\TownNarrationService;
 use App\Services\TownPhotoService;
 use App\Support\AustraliaGeography;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,6 +76,7 @@ class TownController extends Controller
             'regionsByState' => AustraliaGeography::regionsByState(),
             'adminMap' => $this->adminTownMapConfig(null),
             'townAboutAi' => $this->townAboutAiConfig(null),
+            'townNarrationAi' => $this->townNarrationAiConfig(null),
         ]);
     }
 
@@ -94,7 +96,10 @@ class TownController extends Controller
             'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->orderBy('id'),
             'publishedByUser:id,name',
             'verifiedByUser:id,name',
+            'narrationGeneratedByUser:id,name',
         ]);
+
+        $narration = app(TownNarrationService::class);
 
         return view('admin.towns.edit', [
             'town' => $town,
@@ -102,6 +107,14 @@ class TownController extends Controller
             'regionsByState' => AustraliaGeography::regionsByState(),
             'adminMap' => $this->adminTownMapConfig($town),
             'townAboutAi' => $this->townAboutAiConfig($town),
+            'townNarrationAi' => $this->townNarrationAiConfig($town),
+            'townNarration' => [
+                'enabled' => (bool) config('poi_narration.enabled'),
+                'configured' => $narration->isConfigured(),
+                'isStale' => $narration->isStale($town),
+                'generateUrl' => route('admin.towns.narration.generate', $town),
+                'destroyUrl' => route('admin.towns.narration.destroy', $town),
+            ],
         ]);
     }
 
@@ -172,6 +185,36 @@ class TownController extends Controller
         ];
     }
 
+    /**
+     * @return array{enabled: bool, url: string|null, hint: string|null}
+     */
+    private function townNarrationAiConfig(?Town $town): array
+    {
+        $configured = app(TownAboutAiDraftService::class)->isConfigured();
+
+        if ($town === null) {
+            return [
+                'enabled' => false,
+                'url' => null,
+                'hint' => 'Save the town first, then use "Draft Script with Claude" on the edit screen.',
+            ];
+        }
+
+        if (! $configured) {
+            return [
+                'enabled' => false,
+                'url' => null,
+                'hint' => 'Set ANTHROPIC_API_KEY or OPENAI_API_KEY in .env for Claude or OpenAI, then run php artisan config:clear (keys stay on the server only).',
+            ];
+        }
+
+        return [
+            'enabled' => true,
+            'url' => route('admin.towns.ai-narration-script-draft', $town),
+            'hint' => null,
+        ];
+    }
+
     private function townIndexFilteredQuery(Request $request): Builder
     {
         $query = Town::query()->withCount('photos')->orderBy('name');
@@ -210,6 +253,7 @@ class TownController extends Controller
      *     enabled: bool,
      *     styleUrl: string|null,
      *     proxyUrl: string|null,
+     *     geocodeUrl: string|null,
      *     initialLat: float|null,
      *     initialLng: float|null,
      *     defaultZoom: int,
@@ -234,6 +278,7 @@ class TownController extends Controller
             'enabled' => $enabled,
             'styleUrl' => $enabled ? route('admin.maps.style') : null,
             'proxyUrl' => $enabled ? route('admin.maps.proxy') : null,
+            'geocodeUrl' => $enabled ? route('admin.maps.geocode') : null,
             'initialLat' => $lat,
             'initialLng' => $lng,
             'defaultZoom' => ($lat !== null && $lng !== null) ? 11 : 4,
@@ -281,12 +326,13 @@ class TownController extends Controller
     private function validatedTown(Request $request, ?Town $town = null): array
     {
         $stateNorm = AustraliaGeography::normalizeStateInput((string) $request->input('state'));
+        $maxNarration = (int) config('poi_narration.limits.max_script_characters', 5000);
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'state' => ['required', 'string', Rule::in(AustraliaGeography::states())],
             'region' => ['nullable', 'string', 'max:255', Rule::in($this->allowedRegionsForValidation($stateNorm, (string) $request->input('region', ''), $town))],
-            'status' => ['required', 'in:published,draft'],
+            'status' => ['required', 'in:published,draft,pending'],
             'verification_status' => ['required', 'string', Rule::in(array_keys(config('town_verification.statuses')))],
             'population_approx' => ['nullable', 'integer', 'min:0', 'max:50000000'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
@@ -298,6 +344,7 @@ class TownController extends Controller
             'has_caravan_park' => ['required', 'in:0,1'],
             'editorial_hook' => ['nullable', 'string', 'max:20000'],
             'about_html' => ['nullable', 'string', 'max:500000'],
+            'narration_script' => ['nullable', 'string', 'max:'.$maxNarration],
             'likely_poi_categories' => ['nullable', 'string', 'max:255'],
             'suggested_corridor' => ['nullable', 'string', 'max:255'],
             'spreadsheet_notes' => ['nullable', 'string', 'max:20000'],
@@ -311,6 +358,11 @@ class TownController extends Controller
         if (array_key_exists('about_html', $validated)) {
             $sanitized = app(TownAboutHtmlSanitizer::class)->sanitize($validated['about_html'] ?? '');
             $validated['about_html'] = $sanitized === '' ? null : $sanitized;
+        }
+
+        if (array_key_exists('narration_script', $validated) && $validated['narration_script'] !== null) {
+            $trimmed = trim((string) $validated['narration_script']);
+            $validated['narration_script'] = $trimmed === '' ? null : $trimmed;
         }
 
         return $validated;

@@ -3,9 +3,12 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Services\Narration\Contracts\NarrationProvider;
+use App\Services\Narration\ElevenLabsNarrationProvider;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +17,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(NarrationProvider::class, function ($app) {
+            return match (config('poi_narration.provider')) {
+                'elevenlabs' => $app->make(ElevenLabsNarrationProvider::class),
+                default => throw new RuntimeException('Unknown narration provider: '.(string) config('poi_narration.provider')),
+            };
+        });
     }
 
     /**

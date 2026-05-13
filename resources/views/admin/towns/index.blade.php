@@ -40,6 +40,7 @@
                         <option value="">All status</option>
                         <option value="published" @selected(request('status') === 'published')>Published</option>
                         <option value="draft" @selected(request('status') === 'draft')>Draft</option>
+                        <option value="pending" @selected(request('status') === 'pending')>Pending</option>
                     </select>
                     <input class="btn btn-neutral btn-sm" type="submit" value="Filter" />
                     <a class="btn btn-neutral btn-sm" href="{{ route('admin.towns.index') }}">Reset</a>
@@ -78,11 +79,16 @@
                                 {{ $town->suggested_corridor ?? '—' }}
                             </td>
                             <td style="padding:11px 14px;">
-                                @if ($town->status === 'published')
-                                    <span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--badge-in-progress-bg);color:var(--badge-in-progress-text);">Published</span>
-                                @else
-                                    <span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:var(--badge-draft-bg);color:var(--badge-draft-text);">Draft</span>
-                                @endif
+                                @php
+                                    $townStatusBadge = match ($town->status) {
+                                        'published' => ['bg' => 'var(--badge-in-progress-bg)', 'text' => 'var(--badge-in-progress-text)', 'label' => 'Published'],
+                                        'pending' => ['bg' => 'var(--badge-saved-bg)', 'text' => 'var(--badge-saved-text)', 'label' => 'Pending'],
+                                        default => ['bg' => 'var(--badge-draft-bg)', 'text' => 'var(--badge-draft-text)', 'label' => 'Draft'],
+                                    };
+                                @endphp
+                                <span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;background:{{ $townStatusBadge['bg'] }};color:{{ $townStatusBadge['text'] }};">
+                                    {{ $townStatusBadge['label'] }}
+                                </span>
                             </td>
                             <td style="padding:11px 14px;text-align:center;color:var(--color-mid-grey);font-size:12px;font-variant-numeric:tabular-nums;">
                                 {{ ($town->photos_count ?? 0) > 0 ? $town->photos_count : '-' }}

@@ -9,6 +9,7 @@
             <div class="admin-page-subtitle">{{ $pois->total() }} POIs</div>
         </div>
         <div class="admin-page-actions">
+            <a class="btn btn-neutral btn-sm" href="{{ route('admin.pois.map', request()->query()) }}">Map view</a>
             <a class="btn btn-primary btn-sm" href="{{ route('admin.pois.create') }}">+ Add POI</a>
         </div>
     </div>
@@ -25,6 +26,7 @@
                     />
                     <select
                         name="state"
+                        onchange="this.form.requestSubmit()"
                         style="background:var(--color-white);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:7px 12px;font-size:13px;color:var(--color-charcoal);font-family:var(--font-family);outline:none;cursor:pointer;min-width:200px;max-width:260px;"
                     >
                         <option value="">All states</option>
@@ -34,6 +36,7 @@
                     </select>
                     <select
                         name="category"
+                        onchange="this.form.requestSubmit()"
                         style="background:var(--color-white);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:7px 12px;font-size:13px;color:var(--color-charcoal);font-family:var(--font-family);outline:none;cursor:pointer;min-width:180px;"
                     >
                         <option value="">All categories</option>
@@ -43,6 +46,7 @@
                     </select>
                     <select
                         name="status"
+                        onchange="this.form.requestSubmit()"
                         style="background:var(--color-white);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:7px 12px;font-size:13px;color:var(--color-charcoal);font-family:var(--font-family);outline:none;cursor:pointer;"
                     >
                         <option value="">All status</option>
@@ -52,12 +56,22 @@
                     </select>
                     <select
                         name="verification_status"
+                        onchange="this.form.requestSubmit()"
                         style="background:var(--color-white);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:7px 12px;font-size:13px;color:var(--color-charcoal);font-family:var(--font-family);outline:none;cursor:pointer;min-width:200px;"
                     >
                         <option value="">All verification</option>
                         @foreach (\App\Enums\PoiVerificationStatus::cases() as $vs)
                             <option value="{{ $vs->value }}" @selected(request('verification_status') === $vs->value)>{{ $vs->label() }}</option>
                         @endforeach
+                    </select>
+                    <select
+                        name="narration"
+                        onchange="this.form.requestSubmit()"
+                        style="background:var(--color-white);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:7px 12px;font-size:13px;color:var(--color-charcoal);font-family:var(--font-family);outline:none;cursor:pointer;min-width:160px;"
+                    >
+                        <option value="">All narrations</option>
+                        <option value="has" @selected(request('narration') === 'has')>Has narration</option>
+                        <option value="missing" @selected(request('narration') === 'missing')>Missing narration</option>
                     </select>
                     <input class="btn btn-neutral btn-sm" type="submit" value="Filter" />
                     <a class="btn btn-neutral btn-sm" href="{{ route('admin.pois.index') }}">Reset</a>
@@ -71,9 +85,9 @@
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Categories</th>
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Town</th>
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">State</th>
-                        <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Detour</th>
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Status</th>
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Verification</th>
+                        <th style="padding:10px 14px;text-align:center;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);width:72px;">Audio</th>
                         <th style="padding:10px 14px;border-bottom:1px solid var(--color-border);width:160px;"></th>
                     </tr>
                 </thead>
@@ -81,7 +95,7 @@
                     @forelse ($pois as $poi)
                         <tr style="border-bottom:1px solid var(--color-river-stone);">
                             <td style="padding:11px 14px;color:var(--color-near-black);font-weight:600;">
-                                {{ $poi->name }}
+                                <a class="admin-town-table-name" href="{{ route('admin.pois.edit', $poi) }}">{{ $poi->name }}</a>
                             </td>
                             <td style="padding:11px 14px;color:var(--color-mid-grey);font-size:12px;">
                                 {{ implode(', ', $poi->categoryList()) ?: '—' }}
@@ -91,9 +105,6 @@
                             </td>
                             <td style="padding:11px 14px;color:var(--color-mid-grey);font-size:12px;">
                                 {{ $poi->state }}
-                            </td>
-                            <td style="padding:11px 14px;color:var(--color-mid-grey);font-size:12px;">
-                                {{ is_null($poi->detour_km) ? 'On route' : ($poi->detour_km . ' km') }}
                             </td>
                             <td style="padding:11px 14px;">
                                 @php
@@ -115,6 +126,13 @@
                                     <div style="font-size:11px;margin-top:2px;">—</div>
                                 @endif
                             </td>
+                            <td style="padding:11px 14px;text-align:center;font-size:12px;color:var(--color-mid-grey);">
+                                @if ($poi->has_narration)
+                                    <span title="Has narration audio" style="color:var(--color-bush-green);font-weight:700;">●</span>
+                                @else
+                                    <span title="No narration audio" style="opacity:0.35;">○</span>
+                                @endif
+                            </td>
                             <td style="padding:11px 14px;">
                                 <div style="display:flex;gap:6px;justify-content:flex-end;">
                                     <a class="btn btn-neutral btn-sm" href="{{ route('admin.pois.edit', $poi) }}">Edit</a>
@@ -128,7 +146,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" style="padding:16px;color:var(--color-mid-grey);">
+                            <td colspan="9" style="padding:16px;color:var(--color-mid-grey);">
                                 No POIs yet. Create a town first, then <a href="{{ route('admin.pois.create') }}" style="color:var(--color-bush-green);text-decoration:none;font-weight:600;">add your first POI →</a>
                             </td>
                         </tr>

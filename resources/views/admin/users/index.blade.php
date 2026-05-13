@@ -28,7 +28,7 @@
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Name</th>
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Email</th>
                         <th style="padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-mid-grey);border-bottom:1px solid var(--color-border);">Role</th>
-                        <th style="padding:10px 14px;border-bottom:1px solid var(--color-border);width:140px;"></th>
+                        <th style="padding:10px 14px;border-bottom:1px solid var(--color-border);min-width:160px;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,15 +39,17 @@
                             </td>
                             <td style="padding:11px 14px;color:var(--color-mid-grey);font-size:12px;">{{ $u->email }}</td>
                             <td style="padding:11px 14px;font-size:12px;">{{ $u->roleLabel() }}</td>
-                            <td style="padding:11px 14px;text-align:right;">
-                                <a class="btn btn-neutral btn-sm" href="{{ route('admin.users.edit', $u) }}">Edit</a>
-                                @unless ($u->is(auth()->user()))
-                                    <form method="post" action="{{ route('admin.users.destroy', $u) }}" style="display:inline;" onsubmit="return confirm('Remove this user? They will no longer be able to sign in.');">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" class="btn btn-neutral btn-sm">Remove</button>
-                                    </form>
-                                @endunless
+                            <td style="padding:11px 14px;">
+                                <div style="display:flex;flex-wrap:nowrap;gap:6px;justify-content:flex-end;align-items:center;">
+                                    <a class="btn btn-neutral btn-sm" href="{{ route('admin.users.edit', $u) }}">Edit</a>
+                                    @unless ($u->is(auth()->user()))
+                                        <form method="post" action="{{ route('admin.users.destroy', $u) }}" style="margin:0;" onsubmit="return confirm('Remove this user? They will no longer be able to sign in.');">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit" class="btn btn-neutral btn-sm">Remove</button>
+                                        </form>
+                                    @endunless
+                                </div>
                             </td>
                         </tr>
                     @empty

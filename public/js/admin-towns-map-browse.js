@@ -205,6 +205,8 @@
                     : '';
                 var photos = typeof props.photosCount === 'number' ? props.photosCount : 0;
                 var editUrl = String(props.editUrl || '#').replace(/"/g, '');
+                var statusLabel =
+                    props.status === 'published' ? 'Published' : props.status === 'pending' ? 'Pending' : 'Draft';
                 var html =
                     '<div style="font-family:Inter,system-ui,sans-serif;padding:2px 2px 4px;">' +
                     '<div style="font-size:14px;font-weight:600;color:#1a1f1a;">' +
@@ -214,7 +216,7 @@
                     '<div style="font-size:12px;color:#4b5563;margin-top:4px;">' +
                     escapeHtml(props.state || '') +
                     ' · ' +
-                    (props.status === 'published' ? 'Published' : 'Draft') +
+                    statusLabel +
                     ' · ' +
                     photos +
                     ' photo' +

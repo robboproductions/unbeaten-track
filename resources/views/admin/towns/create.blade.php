@@ -31,6 +31,7 @@
                         'selectedRegion' => (string) old('region', ''),
                         'adminMap' => $adminMap,
                         'townAboutAi' => $townAboutAi,
+                        'townNarrationAi' => $townNarrationAi,
                     ])
                 </form>
 
